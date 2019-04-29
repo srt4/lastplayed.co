@@ -17,12 +17,12 @@ class KUTX implements model\RadioStation {
 
     public function getCurrentSong()
     {
-        return $this->onNow->song->trackName;
+        return $this->response->onNow->song->trackName;
     }
 
     public function getCurrentArtist()
     {
-        return $this->onNow->song->artistName;
+        return $this->response->onNow->song->artistName;
     }
 
 }
