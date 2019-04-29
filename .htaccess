@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([A-z]+)/?$ /index.php?call_sign=$1 [L]
