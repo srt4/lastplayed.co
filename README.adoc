@@ -1,0 +1,17 @@
+# lastplayed.co 
+
+## What is it?
+
+lastplayed.co is a simple tool designed for when Shazam doesn't work - whether it's too loud, or too obscure. 
+
+## Usage 
+
+lastplayed.co is designed to be as simple as possible to use: simply type lastplayed.co/{call sign}, 
+and it will show you the current song and artist playing. For example, you can visit http://lastplayed.co/kndd[lastplayed.co/kndd]
+to see the last song played on 107.7 The End. 
+
+## Contributing
+
+Contributing is designed to be simple. To add your station, simply create a file named `{call sign}.php` inside the `callSign`
+folder. Then, implement the `model\RadioStation` interface. Once your pull request is merged, your staiton will be immediately
+available. 
