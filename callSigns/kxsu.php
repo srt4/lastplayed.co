@@ -4,7 +4,7 @@ namespace callSigns;
 
 use model;
 
-class KEXP implements model\RadioStation {
+class KXSU implements model\RadioStation {
 
     private static $BASE_URL = "https://widgets.spinitron.com/KXSU/";
 
@@ -16,18 +16,18 @@ class KEXP implements model\RadioStation {
         $responseBody = file_get_contents("https://widgets.spinitron.com/KXSU/");
         $songArtist = array(); // artist is index 1, song is index 2 
         preg_match("/class=\"artist\">(.+?)<.+?class=\"song\">(.+?)</", $responseBody, $songArtist);
-        self::$artist = $songArtist[1]; 
-        self::$song = $songArtist[2]; 
+        $this->artist = $songArtist[1]; 
+        $this->song = $songArtist[2]; 
     }
 
     public function getCurrentSong()
     {
-        return self::$song;
+        return $this->song;
     }
 
     public function getCurrentArtist()
     {
-        return self::$artist;
+        return $this->artist;
     }
 
 
