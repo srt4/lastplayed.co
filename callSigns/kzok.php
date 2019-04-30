@@ -4,7 +4,7 @@ namespace callSigns;
 
 use model;
 
-class KUTX implements model\RadioStation {
+class KZOK implements model\RadioStation {
 
     private static $API_BASE = "https://us.api.iheart.com/api/v3/live-meta/stream/7787/trackHistory";
 
