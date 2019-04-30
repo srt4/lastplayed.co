@@ -13,5 +13,5 @@ to see the last song played on 107.7 The End.
 ## Contributing
 
 Contributing is designed to be simple. To add your station, simply create a file named `{call sign}.php` inside the `callSign`
-folder. Then, implement the `model\RadioStation` interface. Once your pull request is merged, your staiton will be immediately
+folder. Then, implement the `model\RadioStation` interface. Once your pull request is merged, your station will be immediately
 available. 
