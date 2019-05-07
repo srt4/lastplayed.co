@@ -1,6 +1,6 @@
 <?php
 
-namespace callSigns;
+namespace callSigns\base;
 
 use model;
 

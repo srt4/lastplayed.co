@@ -4,7 +4,7 @@ namespace callSigns;
 
 use model;
 
-class KMGP extends callSigns\SpinitronStation {
+class KMGP extends base\SpinitronStation {
 
     protected function getCallSign() 
     {

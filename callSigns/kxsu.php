@@ -4,7 +4,7 @@ namespace callSigns;
 
 use model;
 
-class KXSU extends callSigns\SpinitronStation {
+class KXSU extends base\SpinitronStation {
 
     protected function getCallSign() 
     {
