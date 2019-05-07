@@ -1,6 +1,7 @@
 <?php
 
 require_once('model/RadioStation.php');
+require_once('callSigns/abstract/SpinitronStation.php'); 
 
 $callSign = $_GET['call_sign'];
 
