@@ -12,10 +12,10 @@ class KBFG implements model\RadioStation {
     public function __construct() 
     {
         $responseBody = file_get_contents("http://ibz1.com/htdocs/recentlyplayed2.cgi");
-        $songArtist = array(); // artist is index 1, song is index 2 
+        $songArtist = array(); // artist is index 2, song is index 1 
         preg_match("/<b>(.+?)<\/b><br>By: (.+?)<br>/", $responseBody, $songArtist);
-        $this->artist = $songArtist[1]; 
-        $this->song = $songArtist[2]; 
+        $this->artist = $songArtist[2]; 
+        $this->song = $songArtist[1]; 
     }
 
     public function getCurrentSong()
