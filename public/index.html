@@ -372,7 +372,7 @@
                 const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const card = document.createElement('div');
                 card.innerHTML = `
-                    <div class="history-card" onclick="window.open('${item.spotifyUrl}', '_blank')">
+                    <div class="history-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                                 <h6 class="history-title text-truncate w-100">${item.song}</h6>
