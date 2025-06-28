@@ -1,0 +1,48 @@
+# Disable directory listing
+Options -Indexes
+
+# Set default index file
+DirectoryIndex index.html
+
+# Enable URL rewriting
+RewriteEngine On
+
+# If the request is not for a real file or directory
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route all non-file requests to index.html for client-side routing
+RewriteRule ^(.*)$ index.html [L]
+
+# Set security headers
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+
+# Enable CORS for API requests
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# Proper MIME types
+AddType application/javascript .js
+AddType text/css .css
+AddType image/x-icon .ico
+AddType image/png .png
+AddType image/jpeg .jpg .jpeg
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>
+
+# Set caching headers
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+</IfModule> 

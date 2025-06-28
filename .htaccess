@@ -1,2 +1,19 @@
-RewriteEngine on
-RewriteRule ^([A-z]+)/?$ /index.php?call_sign=$1 [L]
+# Disable directory listing
+Options -Indexes
+
+# Enable rewrite engine
+RewriteEngine On
+
+# If requesting the API, use index.php
+RewriteCond %{REQUEST_URI} ^/api\.php [NC]
+RewriteRule ^api\.php$ /public/api.php [L]
+
+# The crucial call sign rewrite rule for the frontend
+RewriteRule ^([A-z]+)/?$ /public/index.html [L]
+
+# For all other requests, redirect to public directory
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+# Set the default directory index
+DirectoryIndex public/index.html

@@ -72,11 +72,12 @@
             offlineIndicator: document.getElementById('offline-indicator')
         };
 
-        const params = new URLSearchParams(window.location.search);
-        const callSign = params.get('call_sign');
+        // Get call sign from path instead of query params
+        const path = window.location.pathname;
+        const callSign = path.split('/')[1];
 
         if (!callSign) {
-            showError("No radio station call sign provided. Please add `?call_sign=kexp` to the URL.");
+            showError("No radio station call sign provided. Please use a URL like '/kxly'");
             return;
         }
 
