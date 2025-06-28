@@ -186,6 +186,31 @@
             display: inline-block;
             text-decoration: none;
         }
+
+        .star-button {
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.2s ease;
+            line-height: 1;
+        }
+
+        .star-button:hover {
+            color: #ffd700;
+        }
+
+        .star-button.starred {
+            color: #ffd700;
+        }
+
+        .history-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -217,7 +242,12 @@
 
     <!-- History Section -->
     <div id="history-section" class="history-section w-100" style="max-width: 700px;">
-        <h5 class="text-center mb-4">Previously Played</h5>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="text-center mb-0">Previously Played</h5>
+            <button id="show-starred" class="btn btn-sm btn-outline-warning">
+                Show Starred Only
+            </button>
+        </div>
         <div id="history-container">
             <!-- History cards will be inserted here -->
         </div>
@@ -258,10 +288,12 @@
         const POLL_INTERVAL = 20000; // Poll every 20 seconds
         const CACHE_KEY_PREFIX = 'nowplaying_';
         const HISTORY_KEY_PREFIX = 'history_';
+        const STARRED_KEY = 'starred_songs';
         const MAX_HISTORY_ITEMS = 10;
         let currentSong = null;
         let pollTimer = null;
         let isOffline = !navigator.onLine;
+        let showingStarredOnly = false;
 
         const elements = {
             stationName: document.getElementById('station-name'),
@@ -274,7 +306,8 @@
             updateIndicator: document.getElementById('update-indicator'),
             offlineIndicator: document.getElementById('offline-indicator'),
             historySection: document.getElementById('history-section'),
-            historyContainer: document.getElementById('history-container')
+            historyContainer: document.getElementById('history-container'),
+            showStarredButton: document.getElementById('show-starred')
         };
 
         // Get call sign from subdomain instead of hash
@@ -367,36 +400,94 @@
             }
         }
 
+        function getStarredSongs() {
+            try {
+                return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
+            } catch (e) {
+                console.error('Error loading starred songs:', e);
+                return [];
+            }
+        }
+
+        function toggleStarSong(songKey) {
+            try {
+                const starredSongs = getStarredSongs();
+                const index = starredSongs.indexOf(songKey);
+                
+                if (index === -1) {
+                    starredSongs.push(songKey);
+                } else {
+                    starredSongs.splice(index, 1);
+                }
+                
+                localStorage.setItem(STARRED_KEY, JSON.stringify(starredSongs));
+                updateHistoryDisplay();
+            } catch (e) {
+                console.error('Error toggling star:', e);
+            }
+        }
+
+        function isSongStarred(songKey) {
+            try {
+                const starredSongs = getStarredSongs();
+                return starredSongs.includes(songKey);
+            } catch (e) {
+                console.error('Error checking star status:', e);
+                return false;
+            }
+        }
+
         function updateHistoryDisplay() {
             const history = loadHistory();
             const container = elements.historyContainer;
             container.innerHTML = '';
 
-            history.forEach((item, index) => {
+            const filteredHistory = showingStarredOnly 
+                ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`))
+                : history;
+
+            filteredHistory.forEach((item, index) => {
                 const time = new Date(item.timestamp);
-                // Format time as HH:MM only
                 const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const songKey = `${item.song}:::${item.artist}`;
+                const isStarred = isSongStarred(songKey);
+                
                 const card = document.createElement('div');
                 card.innerHTML = `
                     <div class="history-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                                <h6 class="history-title text-truncate w-100">${item.song}</h6>
-                <p class="history-artist text-truncate w-100">${item.artist}</p>
+                                <h6 class="history-title text-truncate w-100">${item.song}</h6>
+                                <p class="history-artist text-truncate w-100">${item.artist}</p>
                                 <p class="history-time">${timeString}</p>
                             </div>
-                            <a href="${item.spotifyUrl}" target="_blank">
-                                <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
-                            </a>
+                            <div class="history-actions">
+                                <button class="star-button ${isStarred ? 'starred' : ''}" data-song-key="${songKey}">
+                                    ★
+                                </button>
+                                <a href="${item.spotifyUrl}" target="_blank">
+                                    <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
+                                </a>
+                            </div>
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
+
+                // Add click handler for star button
+                const starButton = card.querySelector('.star-button');
+                starButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleStarSong(songKey);
+                });
             });
 
             if (history.length > 0) {
                 elements.historySection.classList.add('visible');
             }
+
+            // Update filter button text
+            elements.showStarredButton.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
         }
 
         async function fetchNowPlaying() {
@@ -529,6 +620,12 @@
 
         // Add clear cache button handler
         document.getElementById('clear-cache').addEventListener('click', clearAllCache);
+
+        // Add filter toggle handler
+        elements.showStarredButton.addEventListener('click', () => {
+            showingStarredOnly = !showingStarredOnly;
+            updateHistoryDisplay();
+        });
     });
 </script>
 
