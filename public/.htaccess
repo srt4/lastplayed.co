@@ -14,16 +14,6 @@ RewriteCond %{REQUEST_FILENAME} !-d
 # Route all non-file requests to index.html for client-side routing
 RewriteRule ^(.*)$ index.html [L]
 
-# Set security headers
-Header set X-Content-Type-Options "nosniff"
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-XSS-Protection "1; mode=block"
-
-# Enable CORS for API requests
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-</IfModule>
-
 # Proper MIME types
 AddType application/javascript .js
 AddType text/css .css
