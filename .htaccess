@@ -4,9 +4,8 @@ Options -Indexes
 # Enable rewrite engine
 RewriteEngine On
 
-# Route API requests to public/api.php
-RewriteCond %{REQUEST_URI} ^/api\.php$ [NC]
-RewriteRule ^(.*)$ public/$1 [L]
+# Handle API requests first
+RewriteRule ^api\.php$ /public/api.php [L,QSA]
 
 # The crucial call sign rewrite rule for the frontend
 RewriteRule ^([A-z]+)/?$ /public/index.html [L]
