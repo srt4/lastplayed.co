@@ -175,10 +175,16 @@
             width: 30px;
             opacity: 0.7;
             transition: opacity 0.2s ease;
+            cursor: pointer;
         }
         
         .history-card:hover .history-spotify {
             opacity: 1;
+        }
+        
+        .history-card a {
+            display: inline-block;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -379,7 +385,9 @@
                 <p class="history-artist text-truncate w-100">${item.artist}</p>
                                 <p class="history-time">${timeString}</p>
                             </div>
-                            <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
+                            <a href="${item.spotifyUrl}" target="_blank">
+                                <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
+                            </a>
                         </div>
                     </div>
                 `;
