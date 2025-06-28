@@ -19,12 +19,25 @@ class StationFactory
 
     public static function create(string $callSign): ?model\RadioStation
     {
-        $stationClass = self::$stations[strtolower($callSign)] ?? null;
-
-        if (!$stationClass || !class_exists($stationClass)) {
+        $callSign = strtolower(trim($callSign));
+        
+        if (!isset(self::$stations[$callSign])) {
+            error_log("Station not found: $callSign");
             return null;
         }
 
-        return new $stationClass();
+        $stationClass = self::$stations[$callSign];
+        
+        if (!class_exists($stationClass)) {
+            error_log("Station class not found: $stationClass");
+            return null;
+        }
+
+        try {
+            return new $stationClass();
+        } catch (\Exception $e) {
+            error_log("Error creating station $callSign: " . $e->getMessage());
+            return null;
+        }
     }
 } 
