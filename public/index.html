@@ -15,6 +15,7 @@
     <div id="offline-indicator" class="offline-indicator">
         You're offline. Showing last known songs.
     </div>
+    <button id="clear-cache" class="btn btn-sm btn-outline-danger mb-3">Clear Cache</button>
     <div id="now-playing-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
         <h4 class="fw-bold mb-4">Now Playing on <span id="station-name">...</span></h4>
         <div class="mb-4">
@@ -307,6 +308,34 @@
                 pollTimer = null;
             }
         });
+
+        async function clearAllCache() {
+            // Clear localStorage
+            const cachePrefix = new RegExp(`^(${CACHE_KEY_PREFIX}|${HISTORY_KEY_PREFIX})`);
+            Object.keys(localStorage).forEach(key => {
+                if (cachePrefix.test(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Clear ServiceWorker cache
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+                
+                // Clear all caches
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+
+            // Reload the page
+            window.location.reload();
+        }
+
+        // Add clear cache button handler
+        document.getElementById('clear-cache').addEventListener('click', clearAllCache);
     });
 </script>
 
