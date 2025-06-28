@@ -72,12 +72,31 @@
             offlineIndicator: document.getElementById('offline-indicator')
         };
 
-        // Get call sign from hash instead of path
-        const hash = window.location.hash;
-        const callSign = hash.replace('#/', ''); // This will get 'kexp' from '#/kexp'
+        // Get call sign from subdomain instead of hash
+        const hostname = window.location.hostname;
+        const callSign = hostname.split('.')[0]; // This will get 'kexp' from 'kexp.currently.rocks'
 
-        if (!callSign) {
-            showError("No radio station call sign provided. Please use a URL like '/#/kxly'");
+        if (!callSign || callSign === 'www' || callSign === 'currently') {
+            // Show station list instead of error
+            elements.nowPlayingContainer.style.display = 'none';
+            elements.errorContainer.style.display = 'block';
+            elements.errorMessage.innerHTML = `
+                <h3>Choose a Radio Station:</h3>
+                <div class="list-group mt-3">
+                    <a href="https://kexp.currently.rocks" class="list-group-item list-group-item-action">KEXP - Seattle</a>
+                    <a href="https://kxly.currently.rocks" class="list-group-item list-group-item-action">KXLY - Spokane</a>
+                    <a href="https://kbcs.currently.rocks" class="list-group-item list-group-item-action">KBCS - Bellevue</a>
+                    <a href="https://kbfg.currently.rocks" class="list-group-item list-group-item-action">KBFG - Seattle</a>
+                    <a href="https://kmgp.currently.rocks" class="list-group-item list-group-item-action">KMGP - Seattle</a>
+                    <a href="https://kndd.currently.rocks" class="list-group-item list-group-item-action">KNDD - Seattle</a>
+                    <a href="https://kpnw.currently.rocks" class="list-group-item list-group-item-action">KPNW - Seattle</a>
+                    <a href="https://kutx.currently.rocks" class="list-group-item list-group-item-action">KUTX - Austin</a>
+                    <a href="https://kxsu.currently.rocks" class="list-group-item list-group-item-action">KXSU - Seattle</a>
+                    <a href="https://kzok.currently.rocks" class="list-group-item list-group-item-action">KZOK - Seattle</a>
+                    <a href="https://ckkq.currently.rocks" class="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
+                </div>
+            `;
+            document.title = "Choose a Radio Station";
             return;
         }
 
@@ -103,7 +122,7 @@
 
         async function fetchNowPlaying() {
             try {
-                const response = await fetch(`/api.php?call_sign=${callSign}`);
+                const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
                 const data = await response.json();
 
                 if (!response.ok) {
