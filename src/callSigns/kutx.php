@@ -1,12 +1,12 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
 class KUTX implements model\RadioStation {
 
-    private static $API_BASE = "https://api.composer.nprstations.org/v1/widget/50ef24ebe1c8a1369593d032/now?format=json";
+    private static $API_BASE = "https://api.kut.org/v1/broadcasts/kutx/on-air?limit=1";
 
     private $response; 
 

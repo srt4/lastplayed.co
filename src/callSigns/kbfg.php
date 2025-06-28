@@ -1,10 +1,10 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
-class KBFG implements model\RadioStation {
+class KBFG extends base\SpinitronStation {
 
     private $song;
     private $artist;  

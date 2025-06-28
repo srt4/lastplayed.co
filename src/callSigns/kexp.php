@@ -1,8 +1,8 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
 class KEXP implements model\RadioStation {
 

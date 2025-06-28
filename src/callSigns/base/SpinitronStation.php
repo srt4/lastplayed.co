@@ -1,8 +1,8 @@
 <?php
 
-namespace callSigns\base;
+namespace LastPlayed\callSigns\base;
 
-use model;
+use LastPlayed\model;
 
 abstract class SpinitronStation implements model\RadioStation {
 

@@ -1,0 +1,12 @@
+{
+    "name": "spencer/lastplayed.co",
+    "description": "Shows the last played song on a radio station.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "LastPlayed\\": "src/"
+        }
+    },
+    "require": {}
+} 

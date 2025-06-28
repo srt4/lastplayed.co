@@ -1,8 +1,8 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
 class CKKQ implements model\RadioStation {
 
@@ -23,6 +23,11 @@ class CKKQ implements model\RadioStation {
     public function getCurrentArtist()
     {
         return $this->response->artist;
+    }
+
+    protected function getCallSign()
+    {
+        // Implementation for getCallSign method
     }
 
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
 class KPNW implements model\RadioStation {
 
-    private static $API_BASE = "https://live.989kpnw.com/wp-content/plugins/hubbard-listen-live/api/hll_cues_get.php";
+    private static $API_BASE = "https://live.amperwave.net/playlist/KPNW-AAC";
     private $response;
 
     public function __construct()

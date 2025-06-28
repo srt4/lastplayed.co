@@ -1,12 +1,12 @@
 <?php
 
-namespace callSigns;
+namespace LastPlayed\callSigns;
 
-use model;
+use LastPlayed\model;
 
 class KZOK implements model\RadioStation {
 
-    private static $API_BASE = "https://us.api.iheart.com/api/v3/live-meta/stream/7787/trackHistory";
+    private static $API_BASE = "https://live.amperwave.net/playlist/KZOK-FM-AAC";
 
     private $response; 
 
