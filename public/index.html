@@ -52,14 +52,24 @@
 <script>
     // Register service worker
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(err => {
-                    console.error('ServiceWorker registration failed:', err);
-                });
+        window.addEventListener('load', async () => {
+            try {
+                // First try to unregister any existing service workers
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+                
+                // Clear all caches before registering new service worker
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                // Now register the new service worker
+                await navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime());
+                console.log('ServiceWorker registration successful');
+            } catch (err) {
+                console.error('ServiceWorker registration failed:', err);
+            }
         });
     }
 
