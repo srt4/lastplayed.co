@@ -523,8 +523,13 @@
 
             // Update filter button text and style
             const btn = elements.showStarredButton;
-            btn.textContent = showingStarredOnly ? 'Show Starred Only' : 'Show All';
-            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-warning' : 'btn-outline-warning'}`;
+            if (showingStarredOnly) {
+                btn.textContent = 'Show All';
+                btn.className = 'btn btn-sm btn-outline-warning';
+            } else {
+                btn.textContent = 'Show Starred Only';
+                btn.className = 'btn btn-sm btn-warning';
+            }
         }
 
         async function fetchNowPlaying() {
