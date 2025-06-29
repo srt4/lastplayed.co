@@ -206,7 +206,7 @@
             color: #bbb;
             font-size: 1.5rem;
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.25rem;
             transition: color 0.2s ease;
             line-height: 1;
         }
@@ -223,8 +223,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
-            margin: 1rem 0;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
         .history-actions {
@@ -252,7 +252,6 @@
             <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
         </div>
         <div class="now-playing-actions">
-            <button id="current-star" class="star-button" style="font-size: 2.5rem;">★</button>
             <div class="spotify-link">
                 <span id="spotify-link">
                     <a href="#" target="_blank">
@@ -260,6 +259,7 @@
                     </a>
                 </span>
             </div>
+            <button id="current-star" class="star-button" style="font-size: 2rem;">★</button>
         </div>
         <div id="update-indicator" class="update-indicator">Last updated: Never</div>
     </div>
