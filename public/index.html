@@ -24,9 +24,18 @@
                 background-color: #121212;
                 color: #e0e0e0;
             }
-            .card {
-                background-color: #1f1f1f;
+            .card, .now-playing-card, .history-card {
+                background-color: #1f1f1f !important;
                 box-shadow: 0 0 12px rgba(255,255,255,.05);
+            }
+            .history-artist {
+                color: #999;
+            }
+            .history-time {
+                color: #777;
+            }
+            .star-button {
+                color: #777;
             }
         }
         
@@ -249,7 +258,7 @@
     <div id="history-section" class="history-section w-100" style="max-width: 700px;">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="text-center mb-0">Previously Played</h5>
-            <button id="show-starred" class="btn btn-sm btn-outline-warning">
+            <button id="show-starred" class="btn btn-sm btn-warning">
                 Show Starred Only
             </button>
         </div>
@@ -504,7 +513,7 @@
             // Update filter button text and style
             const btn = elements.showStarredButton;
             btn.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
-            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-warning' : 'btn-outline-warning'}`;
+            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-outline-warning' : 'btn-warning'}`;
         }
 
         async function fetchNowPlaying() {
