@@ -6,13 +6,22 @@ use LastPlayed\model;
 
 class KUTX implements model\RadioStation {
 
-    private static $API_BASE = "https://api.kut.org/v1/broadcasts/kutx/on-air?limit=1";
+    private static $API_BASE = "https://api.composer.nprstations.org/v1/widget/50ef24ebe1c8a1369593d032/now?format=json";
 
     private $response; 
 
     public function __construct() 
     {
-        $this->response = json_decode(file_get_contents(self::$API_BASE)); 
+        // Set Chrome user agent header for consistency
+        $options = [
+            'http' => [
+                'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            ]
+        ];
+        $context = stream_context_create($options);
+
+        // Make the request using the modified context
+        $this->response = json_decode(file_get_contents(self::$API_BASE, false, $context));
     }
 
     public function getCurrentSong()
