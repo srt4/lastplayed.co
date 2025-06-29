@@ -501,8 +501,10 @@
                 elements.historySection.classList.add('visible');
             }
 
-            // Update filter button text
-            elements.showStarredButton.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
+            // Update filter button text and style
+            const btn = elements.showStarredButton;
+            btn.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
+            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-warning' : 'btn-outline-warning'}`;
         }
 
         async function fetchNowPlaying() {
