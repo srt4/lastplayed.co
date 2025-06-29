@@ -20,19 +20,27 @@ class KZOK implements model\RadioStation {
         ];
         $context = stream_context_create($options);
 
-        // Make the request using the modified context
-        $this->response = json_decode(file_get_contents(self::$API_BASE, false, $context));
+        // Get the HTML response
+        $html = file_get_contents(self::$API_BASE, false, $context);
+
+        // Extract the JSON from the script tag
+        if (preg_match('/<script id="initial-props" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
+            $jsonData = json_decode($matches[1]);
+            $this->response = $jsonData->initialProps->stationData;
+        } else {
+            throw new \Exception("Could not find station data in response");
+        }
     }
 
     public function getCurrentSong()
     {
-        // The iHeart API returns the song title in the response
+        // The iHeart API returns the song title in stationData
         return $this->response->title;
     }
 
     public function getCurrentArtist()
     {
-        // The iHeart API returns the artist in the response
+        // The iHeart API returns the artist in stationData
         return $this->response->artist;
     }
 
