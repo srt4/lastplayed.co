@@ -453,7 +453,17 @@
 
             filteredHistory.forEach((item, index) => {
                 const time = new Date(item.timestamp);
-                const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const now = new Date();
+                let timeString;
+                
+                // Check if the song was played today
+                if (time.toDateString() === now.toDateString()) {
+                    timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    timeString = time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
+                                ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
                 const songKey = `${item.song}:::${item.artist}`;
                 const isStarred = isSongStarred(songKey);
                 
