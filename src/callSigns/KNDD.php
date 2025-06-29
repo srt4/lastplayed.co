@@ -12,7 +12,16 @@ class KNDD implements model\RadioStation {
 
     public function __construct() 
     {
-        $this->response = json_decode(file_get_contents(self::$API_BASE)); 
+        // Set Chrome user agent header
+        $options = [
+            'http' => [
+                'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            ]
+        ];
+        $context = stream_context_create($options);
+
+        // Make the request using the modified context
+        $this->response = json_decode(file_get_contents(self::$API_BASE, false, $context));
     }
 
     public function getCurrentSong()
