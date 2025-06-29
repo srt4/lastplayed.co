@@ -205,7 +205,7 @@
             background: none;
             border: none;
             color: #bbb;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
             padding: 0.5rem;
             transition: color 0.2s ease;
@@ -218,6 +218,13 @@
 
         .star-button.starred {
             color: #ffd700;
+        }
+
+        .now-playing-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
         }
 
         .history-actions {
@@ -244,7 +251,8 @@
             <h5 class="text-uppercase text-secondary">Artist</h5>
             <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
         </div>
-        <div class="spotify-link mb-3">
+        <div class="now-playing-actions mb-3">
+            <button id="current-star" class="star-button" style="font-size: 2rem;">★</button>
             <span id="spotify-link">
                 <a href="#" target="_blank">
                     <img src="/thirdParty/spotify.svg" alt="Open in Spotify">
@@ -303,11 +311,12 @@
         const CACHE_KEY_PREFIX = 'nowplaying_';
         const HISTORY_KEY_PREFIX = 'history_';
         const STARRED_KEY = 'starred_songs';
+        const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
         const MAX_HISTORY_ITEMS = 10;
         let currentSong = null;
         let pollTimer = null;
         let isOffline = !navigator.onLine;
-        let showingStarredOnly = false;
+        let showingStarredOnly = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
 
         const elements = {
             stationName: document.getElementById('station-name'),
@@ -584,6 +593,12 @@
             elements.songTitle.classList.remove('placeholder-glow');
             elements.artistTitle.classList.remove('placeholder-glow');
             elements.spotifyLink.querySelector('a').href = data.spotifySearchUrl;
+
+            // Update star status for current song
+            const songKey = `${data.song}:::${data.artist}`;
+            const currentStarButton = document.getElementById('current-star');
+            currentStarButton.classList.toggle('starred', isSongStarred(songKey));
+            currentStarButton.dataset.songKey = songKey;
         }
 
         function updateTimestamp() {
@@ -650,7 +665,17 @@
         // Add filter toggle handler
         elements.showStarredButton.addEventListener('click', () => {
             showingStarredOnly = !showingStarredOnly;
+            localStorage.setItem(SHOW_STARRED_PREF_KEY, showingStarredOnly);
             updateHistoryDisplay();
+        });
+
+        // Add star handler for current song
+        document.getElementById('current-star').addEventListener('click', (e) => {
+            const songKey = e.target.dataset.songKey;
+            if (songKey) {
+                toggleStarSong(songKey);
+                e.target.classList.toggle('starred', isSongStarred(songKey));
+            }
         });
     });
 </script>
