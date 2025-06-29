@@ -85,7 +85,6 @@
         
         .spotify-link {
             display: inline-block;
-            margin: 1rem 0;
         }
         
         .spotify-link img {
@@ -222,9 +221,10 @@
 
         .now-playing-actions {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             gap: 1rem;
+            margin: 1rem 0;
         }
 
         .history-actions {
@@ -251,13 +251,15 @@
             <h5 class="text-uppercase text-secondary">Artist</h5>
             <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
         </div>
-        <div class="now-playing-actions mb-3">
-            <button id="current-star" class="star-button" style="font-size: 2rem;">★</button>
-            <span id="spotify-link">
-                <a href="#" target="_blank">
-                    <img src="/thirdParty/spotify.svg" alt="Open in Spotify">
-                </a>
-            </span>
+        <div class="now-playing-actions">
+            <button id="current-star" class="star-button" style="font-size: 2.5rem;">★</button>
+            <div class="spotify-link">
+                <span id="spotify-link">
+                    <a href="#" target="_blank">
+                        <img src="/thirdParty/spotify.svg" alt="Open in Spotify">
+                    </a>
+                </span>
+            </div>
         </div>
         <div id="update-indicator" class="update-indicator">Last updated: Never</div>
     </div>
@@ -521,8 +523,8 @@
 
             // Update filter button text and style
             const btn = elements.showStarredButton;
-            btn.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
-            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-outline-warning' : 'btn-warning'}`;
+            btn.textContent = showingStarredOnly ? 'Show Starred Only' : 'Show All';
+            btn.className = `btn btn-sm ${showingStarredOnly ? 'btn-warning' : 'btn-outline-warning'}`;
         }
 
         async function fetchNowPlaying() {
