@@ -8,7 +8,6 @@ class StationFactory
         'kexp' => callSigns\KEXP::class,
         'kndd' => callSigns\KNDD::class,
         'kzok' => callSigns\KZOK::class,
-        'kpnw' => callSigns\KPNW::class,
         'kutx' => callSigns\KUTX::class,
         'ckkq' => callSigns\CKKQ::class,
         'kbcs' => callSigns\KBCS::class,
