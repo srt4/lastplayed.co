@@ -48,6 +48,38 @@
             margin-bottom: 5vh;
             max-width: 100%;
             overflow: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .updating {
+            opacity: 0.7;
+        }
+
+        .song-info {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .song-info.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+            border-radius: 4px;
         }
         
         .song-title, .artist-title {
@@ -237,16 +269,21 @@
         You're offline. Showing last known songs.
     </div>
     <button id="clear-cache" class="btn btn-sm btn-outline-danger mb-3">Clear Cache</button>
-    <div id="now-playing-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
-        <h4 class="fw-bold mb-4">Now Playing on <span id="station-name">...</span></h4>
-        <div class="mb-4">
-            <h5 class="text-uppercase text-secondary">Song</h5>
-            <h1 id="song-title" class="song-title mb-2 text-truncate placeholder-glow"><span class="placeholder col-10"></span></h1>
+<div id="now-playing-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
+    <div id="loading-spinner" class="d-flex justify-content-center align-items-center" style="height: 100px;">
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="mb-5">
-            <h5 class="text-uppercase text-secondary">Artist</h5>
-            <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
-        </div>
+    </div>
+    <h4 class="fw-bold mb-4">Now Playing on <span id="station-name">...</span></h4>
+    <div class="song-info mb-4">
+        <h5 class="text-uppercase text-secondary">Song</h5>
+        <h1 id="song-title" class="song-title mb-2 text-truncate placeholder-glow"><span class="placeholder col-10 skeleton"></span></h1>
+    </div>
+    <div class="song-info mb-5">
+        <h5 class="text-uppercase text-secondary">Artist</h5>
+        <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8 skeleton"></span></h1>
+    </div>
         <div class="now-playing-actions">
             <div class="spotify-link">
                 <span id="spotify-link">
@@ -305,7 +342,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const POLL_INTERVAL = 20000; // Poll every 20 seconds
+        const POLL_INTERVAL = 10000; // Poll every 10 seconds
         const CACHE_KEY_PREFIX = 'nowplaying_';
         const HISTORY_KEY_PREFIX = 'history_';
         const STARRED_KEY = 'starred_songs';
@@ -585,19 +622,36 @@
             }
         }
 
-        function updateUI(data) {
-            elements.songTitle.textContent = data.song;
-            elements.artistTitle.textContent = data.artist;
-            elements.songTitle.classList.remove('placeholder-glow');
-            elements.artistTitle.classList.remove('placeholder-glow');
-            elements.spotifyLink.querySelector('a').href = data.spotifySearchUrl;
+function updateUI(data) {
+    const songInfo = document.querySelectorAll('.song-info');
+    elements.nowPlayingContainer.classList.add('updating');
 
-            // Update star status for current song
-            const songKey = `${data.song}:::${data.artist}`;
-            const currentStarButton = document.getElementById('current-star');
-            currentStarButton.classList.toggle('starred', isSongStarred(songKey));
-            currentStarButton.dataset.songKey = songKey;
-        }
+    // Start fade out
+    songInfo.forEach(el => el.classList.remove('visible'));
+
+    // After fade out, update content
+    setTimeout(() => {
+        elements.songTitle.textContent = data.song;
+        elements.artistTitle.textContent = data.artist;
+        elements.songTitle.classList.remove('placeholder-glow');
+        elements.artistTitle.classList.remove('placeholder-glow');
+        elements.spotifyLink.querySelector('a').href = data.spotifySearchUrl;
+
+        // Hide loading spinner
+        const spinner = document.getElementById('loading-spinner');
+        if (spinner) spinner.style.display = 'none';
+
+        // Update star status for current song
+        const songKey = `${data.song}:::${data.artist}`;
+        const currentStarButton = document.getElementById('current-star');
+        currentStarButton.classList.toggle('starred', isSongStarred(songKey));
+        currentStarButton.dataset.songKey = songKey;
+
+        // Fade in new content
+        elements.nowPlayingContainer.classList.remove('updating');
+        songInfo.forEach(el => el.classList.add('visible'));
+    }, 300);
+}
 
         function updateTimestamp() {
             const now = new Date();
