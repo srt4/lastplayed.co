@@ -85,6 +85,8 @@
             max-width: 100%;
             overflow: hidden;
             position: relative;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
         }
         
         .now-playing-card::before {
@@ -174,13 +176,13 @@
         .spotify-link img {
             width: 75px;
             height: auto;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s ease;
             border-radius: 16px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         }
         
         .spotify-link img:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         .placeholder-glow .placeholder {
@@ -229,7 +231,7 @@
         }
         
         .history-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             border-radius: 20px;
             padding: 1.5rem;
             background: rgba(255, 255, 255, 0.08);
@@ -240,6 +242,8 @@
             overflow: hidden;
             cursor: default;
             position: relative;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
         
         
@@ -298,7 +302,7 @@
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             line-height: 1;
             border-radius: 50%;
         }
@@ -323,6 +327,22 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
     </style>
 </head>
@@ -607,6 +627,9 @@
                     e.preventDefault();
                     toggleStarSong(songKey);
                 });
+                
+                // Add staggered delay for history cards
+                card.style.animationDelay = `${index * 0.05}s`;
             });
 
             if (history.length > 0) {
