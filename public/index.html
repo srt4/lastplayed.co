@@ -4,48 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Now Playing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        
-        #clear-cache {
-            visibility: hidden; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            padding: 1rem;
-            margin: 0;
             min-height: 100vh;
+            padding: 1rem;
         }
-        
+
         @media (prefers-color-scheme: light) {
             body {
                 background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 50%, #60a5fa 100%);
                 color: #1e293b;
             }
-            .now-playing-card, .history-card {
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+                color: #e0e0e0;
+            }
+        }
+
+        #root {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .now-playing-card {
+            border-radius: 24px;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            margin: 5vh 0;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
+            text-align: center;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .now-playing-card {
                 background: rgba(255, 255, 255, 0.95) !important;
                 border: 1px solid rgba(147, 197, 253, 0.3) !important;
                 box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15) !important;
             }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .now-playing-card {
+                background: rgba(255, 255, 255, 0.02) !important;
+                backdrop-filter: blur(20px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+            }
+        }
+
+        .now-playing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        }
+
+        .station-title {
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .song-section, .artist-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .section-label {
+                color: rgba(30, 41, 59, 0.6) !important;
+            }
+        }
+
+        .song-title, .artist-title {
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .song-title {
+            font-size: 2.2rem;
+            color: #00d4aa;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (prefers-color-scheme: light) {
             .song-title {
                 color: #1d4ed8 !important;
             }
-            .history-title {
-                color: #1d4ed8 !important;
-            }
+        }
+
+        .artist-title {
+            font-size: 1.6rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        @media (prefers-color-scheme: light) {
             .artist-title {
                 color: #475569 !important;
             }
-            .history-artist {
-                color: #64748b !important;
-            }
-            .history-time {
-                color: #94a3b8 !important;
-            }
+        }
+
+        .now-playing-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .spotify-link img {
+            width: 75px;
+            height: auto;
+            transition: transform 0.2s ease;
+            border-radius: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .spotify-link img:hover {
+            transform: scale(1.05);
+        }
+
+        .star-button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: all 0.2s ease;
+            line-height: 1;
+            border-radius: 50%;
+        }
+
+        .star-button:hover {
+            color: #ffd700;
+        }
+
+        .star-button.starred {
+            color: #ffd700;
+        }
+
+        @media (prefers-color-scheme: light) {
             .star-button {
                 color: #64748b !important;
             }
@@ -56,84 +204,196 @@
                 color: #fbbf24 !important;
             }
         }
-        
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-                color: #e0e0e0;
+
+        .update-indicator {
+            opacity: 0.7;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1rem;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .update-indicator {
+                color: rgba(30, 41, 59, 0.6) !important;
             }
-            .card, .now-playing-card, .history-card {
+        }
+
+        .history-section {
+            width: 100%;
+            max-width: 700px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .history-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .history-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .filter-button {
+            background: #fbbf24;
+            color: #1f2937;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .filter-button:hover {
+            background: #f59e0b;
+            transform: translateY(-1px);
+        }
+
+        .history-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-card {
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            cursor: default;
+            position: relative;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .history-card {
+                background: rgba(255, 255, 255, 0.95) !important;
+                border: 1px solid rgba(147, 197, 253, 0.3) !important;
+                box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15) !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .history-card {
                 background: rgba(255, 255, 255, 0.02) !important;
                 backdrop-filter: blur(20px) !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
             }
-            .history-artist {
-                color: #bbb;
-            }
-            .history-time {
-                color: #888;
-            }
-            .star-button {
-                color: #888;
-            }
         }
-        
-        .now-playing-card {
-            border-radius: 24px;
-            padding: 3rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            margin-top: 5vh;
-            margin-bottom: 5vh;
-            max-width: 100%;
-            overflow: hidden;
-            position: relative;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out 0.2s forwards;
+
+        .history-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
         }
-        
-        .now-playing-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+
+        .history-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
-        
-        .song-title, .artist-title {
-            font-weight: 700;
-            line-height: 1.2;
-            margin: 0;
-            padding: 0;
-            max-width: 100%;
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem 0;
+            color: #00d4aa;
             overflow-wrap: break-word;
             word-wrap: break-word;
             word-break: break-word;
+            font-weight: 600;
         }
-        
-        .song-title {
-            font-size: 2.2rem;
-            color: #00d4aa;
-            margin-bottom: 0.5rem;
+
+        @media (prefers-color-scheme: light) {
+            .history-title {
+                color: #1d4ed8 !important;
+            }
         }
-        
-        .artist-title {
-            font-size: 1.6rem;
-            color: rgba(255, 255, 255, 0.8);
+
+        .history-artist {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0.5rem 0;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
             font-weight: 300;
-            letter-spacing: 0.5px;
         }
-        
+
+        @media (prefers-color-scheme: light) {
+            .history-artist {
+                color: #64748b !important;
+            }
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .history-time {
+                color: #94a3b8 !important;
+            }
+        }
+
+        .history-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-spotify {
+            width: 30px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        .history-card:hover .history-spotify {
+            opacity: 1;
+        }
+
+        .offline-indicator {
+            display: none;
+            background-color: #ff9800;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .offline-indicator.visible {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .now-playing-card {
                 padding: 2rem;
-                margin-top: 2vh;
-                margin-bottom: 2vh;
+                margin: 2vh 0;
             }
             .song-title {
                 font-size: 1.8rem;
@@ -145,7 +405,7 @@
                 padding: 1rem;
             }
         }
-        
+
         @media (max-width: 576px) {
             body {
                 padding: 0.5rem;
@@ -173,173 +433,21 @@
             .history-artist {
                 font-size: 0.9rem;
             }
-        }
-        
-        .spotify-link {
-            display: inline-block;
-        }
-        
-        .spotify-link img {
-            width: 75px;
-            height: auto;
-            transition: transform 0.2s ease;
-            border-radius: 16px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        }
-        
-        .spotify-link img:hover {
-            transform: scale(1.05);
-        }
-        
-        .placeholder-glow .placeholder {
-            border-radius: 10px;
-        }
-        
-        #error-container {
-            display: none;
-        }
-        
-        .update-indicator {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .update-indicator.active {
-            opacity: 1;
-        }
-        
-        .offline-indicator {
-            display: none;
-            background-color: #ff9800;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-        
-        .offline-indicator.visible {
-            display: block;
-        }
-        
-        /* History styles */
-        .history-section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            max-width: 100%;
-        }
-        
-        .history-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .history-card {
-            transition: all 0.3s ease;
-            border-radius: 20px;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            margin-bottom: 1rem;
-            overflow: hidden;
-            cursor: default;
-            position: relative;
-            opacity: 0;
-            animation: fadeInUp 0.5s ease-out forwards;
-        }
-        
-        
-        .history-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-        }
-        
-        .history-title {
-            font-size: 1.2rem;
-            margin: 0;
-            color: #00d4aa;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            font-weight: 600;
-        }
-        
-        .history-artist {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin: 0.5rem 0;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            font-weight: 300;
-        }
-        
-        .history-time {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin: 0;
-            font-weight: 400;
-        }
-        
-        .history-spotify {
-            width: 30px;
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-            cursor: pointer;
-        }
-        
-        .history-card:hover .history-spotify {
-            opacity: 1;
-        }
-        
-        .history-card a {
-            display: inline-block;
-            text-decoration: none;
+            .history-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            .filter-button {
+                width: 100%;
+            }
         }
 
-        .star-button {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            transition: all 0.2s ease;
-            line-height: 1;
-            border-radius: 50%;
-        }
-
-        .star-button:hover {
-            color: #ffd700;
-        }
-
-        .star-button.starred {
-            color: #ffd700;
-        }
-
-        .now-playing-actions {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .history-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         @keyframes fadeInUp {
             from { 
                 opacity: 0; 
@@ -353,460 +461,368 @@
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-<div class="container d-flex justify-content-center flex-column align-items-center">
-    <div id="offline-indicator" class="offline-indicator">
-        You're offline. Showing last known songs.
-    </div>
-    <button id="clear-cache" class="btn btn-sm btn-outline-danger mb-3">Clear Cache</button>
-    <div id="now-playing-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
-        <h4 class="fw-bold mb-4">Now Playing on <span id="station-name">...</span></h4>
-        <div class="mb-4">
-            <h5 class="text-uppercase text-secondary">Song</h5>
-            <h1 id="song-title" class="song-title mb-2 text-truncate placeholder-glow"><span class="placeholder col-10"></span></h1>
-        </div>
-        <div class="mb-5">
-            <h5 class="text-uppercase text-secondary">Artist</h5>
-            <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
-        </div>
-        <div class="now-playing-actions">
-            <div class="spotify-link">
-                <span id="spotify-link">
-                    <a href="#" target="_blank">
-                        <img src="/thirdParty/spotify.svg" alt="Open in Spotify">
-                    </a>
-                </span>
-            </div>
-            <button id="current-star" class="star-button" style="font-size: 2rem;">★</button>
-        </div>
-        <div id="update-indicator" class="update-indicator">Last updated: Never</div>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
 
-    <!-- History Section -->
-    <div id="history-section" class="history-section w-100" style="max-width: 700px;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="text-center mb-0">Previously Played</h5>
-            <button id="show-starred" class="btn btn-sm btn-warning">
-                Show Starred Only
-            </button>
-        </div>
-        <div id="history-container">
-            <!-- History cards will be inserted here -->
-        </div>
-    </div>
-
-    <div id="error-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
-        <h1 class="display-4 text-danger">Error</h1>
-        <p id="error-message" class="lead"></p>
-        <a href="/" class="btn btn-primary mt-3">Try Again</a>
-    </div>
-</div>
-
-<script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-            try {
-                // First try to unregister any existing service workers
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
+        // Custom hook for localStorage
+        const useLocalStorage = (key, initialValue) => {
+            const [storedValue, setStoredValue] = useState(() => {
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    console.error(`Error reading localStorage key "${key}":`, error);
+                    return initialValue;
                 }
-                
-                // Clear all caches before registering new service worker
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-                
-                // Now register the new service worker
-                await navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime());
-                console.log('ServiceWorker registration successful');
-            } catch (err) {
-                console.error('ServiceWorker registration failed:', err);
-            }
-        });
-    }
+            });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const POLL_INTERVAL = 20000; // Poll every 20 seconds
-        const CACHE_KEY_PREFIX = 'nowplaying_';
-        const HISTORY_KEY_PREFIX = 'history_';
-        const STARRED_KEY = 'starred_songs';
-        const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
-        const MAX_HISTORY_ITEMS = 10;
-        let currentSong = null;
-        let pollTimer = null;
-        let isOffline = !navigator.onLine;
-        let showingStarredOnly = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
+            const setValue = (value) => {
+                try {
+                    setStoredValue(value);
+                    window.localStorage.setItem(key, JSON.stringify(value));
+                } catch (error) {
+                    console.error(`Error setting localStorage key "${key}":`, error);
+                }
+            };
 
-        const elements = {
-            stationName: document.getElementById('station-name'),
-            songTitle: document.getElementById('song-title'),
-            artistTitle: document.getElementById('artist-title'),
-            spotifyLink: document.getElementById('spotify-link'),
-            nowPlayingContainer: document.getElementById('now-playing-container'),
-            errorContainer: document.getElementById('error-container'),
-            errorMessage: document.getElementById('error-message'),
-            updateIndicator: document.getElementById('update-indicator'),
-            offlineIndicator: document.getElementById('offline-indicator'),
-            historySection: document.getElementById('history-section'),
-            historyContainer: document.getElementById('history-container'),
-            showStarredButton: document.getElementById('show-starred')
+            return [storedValue, setValue];
         };
 
-        // Get call sign from subdomain instead of hash
-        const hostname = window.location.hostname;
-        const callSign = hostname.split('.')[0];
+        // Custom hook for now playing data
+        const useNowPlaying = (callSign) => {
+            const [currentSong, setCurrentSong] = useState(null);
+            const [history, setHistory] = useLocalStorage(`history_${callSign}`, []);
+            const [starredSongs, setStarredSongs] = useLocalStorage('starred_songs', []);
+            const [isLoading, setIsLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [lastUpdated, setLastUpdated] = useState(null);
+            const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
-        if (!callSign || callSign === 'www' || callSign === 'currently') {
-            // Show station list instead of error
-            elements.nowPlayingContainer.style.display = 'none';
-            elements.errorContainer.style.display = 'block';
-            elements.errorMessage.innerHTML = `
-                <h3>Choose a Radio Station:</h3>
-                <div class="list-group mt-3">
-                    <a href="https://kexp.currently.rocks" class="list-group-item list-group-item-action">KEXP - Seattle</a>
-                    <a href="https://kxly.currently.rocks" class="list-group-item list-group-item-action">KXLY - Spokane</a>
-                    <a href="https://kbcs.currently.rocks" class="list-group-item list-group-item-action">KBCS - Bellevue</a>
-                    <a href="https://kbfg.currently.rocks" class="list-group-item list-group-item-action">KBFG - Seattle</a>
-                    <a href="https://kmgp.currently.rocks" class="list-group-item list-group-item-action">KMGP - Seattle</a>
-                    <a href="https://kndd.currently.rocks" class="list-group-item list-group-item-action">KNDD - Seattle</a>
-                    <a href="https://kpnw.currently.rocks" class="list-group-item list-group-item-action">KPNW - Seattle</a>
-                    <a href="https://kutx.currently.rocks" class="list-group-item list-group-item-action">KUTX - Austin</a>
-                    <a href="https://kxsu.currently.rocks" class="list-group-item list-group-item-action">KXSU - Seattle</a>
-                    <a href="https://kzok.currently.rocks" class="list-group-item list-group-item-action">KZOK - Seattle</a>
-                    <a href="https://ckkq.currently.rocks" class="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
-                </div>
-            `;
-            document.title = "Choose a Radio Station";
-            return;
-        }
+            const POLL_INTERVAL = 20000;
+            const MAX_HISTORY_ITEMS = 10;
 
-        elements.stationName.textContent = callSign.toUpperCase();
-        document.title = `Now Playing on ${callSign.toUpperCase()}`;
+            const fetchNowPlaying = useCallback(async () => {
+                try {
+                    setIsLoading(true);
+                    const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
+                    const data = await response.json();
 
-        // Handle online/offline status
-        window.addEventListener('online', handleOnlineStatus);
-        window.addEventListener('offline', handleOnlineStatus);
+                    if (!response.ok) {
+                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    }
 
-        function handleOnlineStatus() {
-            isOffline = !navigator.onLine;
-            elements.offlineIndicator.classList.toggle('visible', isOffline);
-            
-            if (isOffline) {
-                loadFromCache();
-            } else {
-                fetchNowPlaying();
-            }
-        }
+                    localStorage.setItem(`nowplaying_${callSign}`, JSON.stringify({
+                        data,
+                        timestamp: new Date().toISOString()
+                    }));
 
-        function getHistoryKey() {
-            return `${HISTORY_KEY_PREFIX}${callSign}`;
-        }
+                    if (!currentSong || currentSong.song !== data.song || currentSong.artist !== data.artist) {
+                        setCurrentSong(data);
+                        
+                        if (data.song && data.artist) {
+                            setHistory(prev => {
+                                const newHistory = prev.filter(
+                                    item => !(item.song === data.song && item.artist === data.artist)
+                                );
+                                return [{
+                                    song: data.song,
+                                    artist: data.artist,
+                                    timestamp: new Date().toISOString(),
+                                    spotifyUrl: data.spotifySearchUrl
+                                }, ...newHistory].slice(0, MAX_HISTORY_ITEMS);
+                            });
+                        }
+                    }
 
-        function loadHistory() {
-            try {
-                const history = JSON.parse(localStorage.getItem(getHistoryKey()) || '[]');
-                return history;
-            } catch (e) {
-                console.error('Error loading history:', e);
-                return [];
-            }
-        }
-
-        function saveToHistory(song) {
-            if (!song || !song.song || !song.artist) return;
-
-            try {
-                let history = loadHistory();
-                
-                // Check if this song is different from the last one
-                const lastSong = history[0];
-                if (lastSong && lastSong.song === song.song && lastSong.artist === song.artist) {
-                    return;
+                    setLastUpdated(new Date());
+                    setError(null);
+                } catch (err) {
+                    console.error('Error fetching now playing:', err);
+                    if (isOffline) {
+                        loadFromCache();
+                    } else {
+                        setError(err.message);
+                    }
+                } finally {
+                    setIsLoading(false);
                 }
+            }, [callSign, currentSong, isOffline, setHistory]);
 
-                // Add new song to the beginning
-                history.unshift({
-                    song: song.song,
-                    artist: song.artist,
-                    timestamp: new Date().toISOString(),
-                    spotifyUrl: song.spotifySearchUrl
+            const loadFromCache = useCallback(() => {
+                try {
+                    const cached = localStorage.getItem(`nowplaying_${callSign}`);
+                    if (cached) {
+                        const { data, timestamp } = JSON.parse(cached);
+                        setCurrentSong(data);
+                        setLastUpdated(new Date(timestamp));
+                    }
+                } catch (err) {
+                    console.error('Error loading from cache:', err);
+                }
+            }, [callSign]);
+
+            const toggleStar = useCallback((songKey) => {
+                setStarredSongs(prev => {
+                    const index = prev.indexOf(songKey);
+                    if (index === -1) {
+                        return [...prev, songKey];
+                    } else {
+                        return prev.filter(key => key !== songKey);
+                    }
                 });
+            }, [setStarredSongs]);
 
-                // Keep only the last MAX_HISTORY_ITEMS
-                history = history.slice(0, MAX_HISTORY_ITEMS);
-
-                localStorage.setItem(getHistoryKey(), JSON.stringify(history));
-                updateHistoryDisplay();
-            } catch (e) {
-                console.error('Error saving to history:', e);
-            }
-        }
-
-        function getStarredSongs() {
-            try {
-                return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
-            } catch (e) {
-                console.error('Error loading starred songs:', e);
-                return [];
-            }
-        }
-
-        function toggleStarSong(songKey) {
-            try {
-                const starredSongs = getStarredSongs();
-                const index = starredSongs.indexOf(songKey);
-                
-                if (index === -1) {
-                    starredSongs.push(songKey);
-                } else {
-                    starredSongs.splice(index, 1);
-                }
-                
-                localStorage.setItem(STARRED_KEY, JSON.stringify(starredSongs));
-                updateHistoryDisplay(true);
-            } catch (e) {
-                console.error('Error toggling star:', e);
-            }
-        }
-
-        function isSongStarred(songKey) {
-            try {
-                const starredSongs = getStarredSongs();
+            const isSongStarred = useCallback((songKey) => {
                 return starredSongs.includes(songKey);
-            } catch (e) {
-                console.error('Error checking star status:', e);
-                return false;
-            }
-        }
+            }, [starredSongs]);
 
-        function updateHistoryDisplay(skipAnimation = false) {
-            const history = loadHistory();
-            const container = elements.historyContainer;
-            container.innerHTML = '';
+            useEffect(() => {
+                const handleOnline = () => {
+                    setIsOffline(false);
+                    fetchNowPlaying();
+                };
+
+                const handleOffline = () => {
+                    setIsOffline(true);
+                    loadFromCache();
+                };
+
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+
+                return () => {
+                    window.removeEventListener('online', handleOnline);
+                    window.removeEventListener('offline', handleOffline);
+                };
+            }, [fetchNowPlaying, loadFromCache]);
+
+            useEffect(() => {
+                if (callSign) {
+                    fetchNowPlaying();
+                    const interval = setInterval(fetchNowPlaying, POLL_INTERVAL);
+                    return () => clearInterval(interval);
+                }
+            }, [fetchNowPlaying, callSign]);
+
+            return {
+                currentSong,
+                history,
+                starredSongs,
+                isLoading,
+                error,
+                lastUpdated,
+                isOffline,
+                toggleStar,
+                isSongStarred
+            };
+        };
+
+        // NowPlaying component
+        const NowPlaying = ({ 
+            song, 
+            artist, 
+            spotifyUrl, 
+            stationName, 
+            isStarred, 
+            onToggleStar, 
+            lastUpdated,
+            isOffline 
+        }) => {
+            const songKey = `${song}:::${artist}`;
+
+            return (
+                <div className="now-playing-card">
+                    <h4 className="station-title">Now Playing on {stationName}</h4>
+                    
+                    <div className="song-section">
+                        <h5 className="section-label">Song</h5>
+                        <h1 className="song-title">{song || 'Loading...'}</h1>
+                    </div>
+                    
+                    <div className="artist-section">
+                        <h5 className="section-label">Artist</h5>
+                        <h1 className="artist-title">{artist || 'Loading...'}</h1>
+                    </div>
+                    
+                    <div className="now-playing-actions">
+                        <div className="spotify-link">
+                            <a href={spotifyUrl} target="_blank" rel="noopener noreferrer">
+                                <img src="/thirdParty/spotify.svg" alt="Open in Spotify" />
+                            </a>
+                        </div>
+                        <button 
+                            className={`star-button ${isStarred ? 'starred' : ''}`}
+                            onClick={() => onToggleStar(songKey)}
+                        >
+                            ★
+                        </button>
+                    </div>
+                    
+                    <div className="update-indicator">
+                        Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+                        {isOffline && ' (cached)'}
+                    </div>
+                </div>
+            );
+        };
+
+        // History component
+        const History = ({ history, onToggleStar, isSongStarred }) => {
+            const [showingStarredOnly, setShowingStarredOnly] = useState(false);
 
             const filteredHistory = showingStarredOnly 
                 ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`))
                 : history;
 
-            filteredHistory.forEach((item, index) => {
-                const time = new Date(item.timestamp);
+            const formatTime = (timestamp) => {
+                const time = new Date(timestamp);
                 const now = new Date();
-                let timeString;
                 
-                // Check if the song was played today
                 if (time.toDateString() === now.toDateString()) {
-                    timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 } else {
-                    timeString = time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
-                                ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    return time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
+                           ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 }
+            };
 
-                const songKey = `${item.song}:::${item.artist}`;
-                const isStarred = isSongStarred(songKey);
+            if (history.length === 0) {
+                return null;
+            }
+
+            return (
+                <div className="history-section visible">
+                    <div className="history-header">
+                        <h5>Previously Played</h5>
+                        <button 
+                            className="filter-button"
+                            onClick={() => setShowingStarredOnly(!showingStarredOnly)}
+                        >
+                            {showingStarredOnly ? 'Show All' : 'Show Starred Only'}
+                        </button>
+                    </div>
+                    
+                    <div className="history-container">
+                        {filteredHistory.map((item, index) => {
+                            const songKey = `${item.song}:::${item.artist}`;
+                            const isStarred = isSongStarred(songKey);
+                            
+                            return (
+                                <div 
+                                    key={`${songKey}-${item.timestamp}`}
+                                    className="history-card"
+                                    style={{ animationDelay: `${index * 0.05}s` }}
+                                >
+                                    <div className="history-content">
+                                        <div className="history-info">
+                                            <h6 className="history-title">{item.song}</h6>
+                                            <p className="history-artist">{item.artist}</p>
+                                            <p className="history-time">{formatTime(item.timestamp)}</p>
+                                        </div>
+                                        <div className="history-actions">
+                                            <button 
+                                                className={`star-button ${isStarred ? 'starred' : ''}`}
+                                                onClick={() => onToggleStar(songKey)}
+                                            >
+                                                ★
+                                            </button>
+                                            <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
+                                                <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App component
+        const App = () => {
+            const [callSign, setCallSign] = useState('');
+
+            useEffect(() => {
+                const hostname = window.location.hostname;
+                const subdomain = hostname.split('.')[0];
                 
-                const card = document.createElement('div');
-                card.innerHTML = `
-                    <div class="history-card">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="history-title text-truncate w-100">${item.song}</h6>
-                                <p class="history-artist text-truncate w-100">${item.artist}</p>
-                                <p class="history-time">${timeString}</p>
-                            </div>
-                            <div class="history-actions">
-                                <button class="star-button ${isStarred ? 'starred' : ''}" data-song-key="${songKey}">
-                                    ★
-                                </button>
-                                <a href="${item.spotifyUrl}" target="_blank">
-                                    <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
-                                </a>
+                if (subdomain && subdomain !== 'www' && subdomain !== 'currently') {
+                    setCallSign(subdomain.toUpperCase());
+                    document.title = `Now Playing on ${subdomain.toUpperCase()}`;
+                } else {
+                    document.title = 'Choose a Radio Station';
+                }
+            }, []);
+
+            const {
+                currentSong,
+                history,
+                isLoading,
+                error,
+                lastUpdated,
+                isOffline,
+                toggleStar,
+                isSongStarred
+            } = useNowPlaying(callSign);
+
+            if (!callSign || callSign === 'WWW' || callSign === 'CURRENTLY') {
+                return (
+                    <div className="container">
+                        <div className="now-playing-card">
+                            <h3>Choose a Radio Station:</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1.5rem' }}>
+                                <a href="https://kexp.currently.rocks" style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', textDecoration: 'none', color: 'inherit' }}>KEXP - Seattle</a>
+                                <a href="https://kbcs.currently.rocks" style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', textDecoration: 'none', color: 'inherit' }}>KBCS - Bellevue</a>
+                                <a href="https://kzok.currently.rocks" style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', textDecoration: 'none', color: 'inherit' }}>KZOK - Seattle</a>
                             </div>
                         </div>
                     </div>
-                `;
-                container.appendChild(card);
-
-                // Add click handler for star button
-                const starButton = card.querySelector('.star-button');
-                starButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleStarSong(songKey);
-                });
-                
-                // Add staggered delay for history cards only on initial load
-                if (!skipAnimation) {
-                    card.style.animationDelay = `${index * 0.05}s`;
-                } else {
-                    card.style.animation = 'none';
-                    card.style.opacity = '1';
-                }
-            });
-
-            if (history.length > 0) {
-                elements.historySection.classList.add('visible');
+                );
             }
 
-            // Update filter button text and style
-            const btn = elements.showStarredButton;
-            btn.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
-            btn.className = 'btn btn-sm btn-warning';
-        }
-
-        async function fetchNowPlaying() {
-            try {
-                const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || `HTTP error! status: ${response.status}`);
-                }
-
-                // Cache the successful response
-                await cacheData(data);
-
-                // Only update if the song has changed
-                if (!currentSong || currentSong.song !== data.song || currentSong.artist !== data.artist) {
-                    currentSong = data;
-                    updateUI(data);
-                    saveToHistory(data);
-                }
-
-                // Update timestamp even if song hasn't changed
-                updateTimestamp();
-
-            } catch (error) {
-                console.error('Error fetching now playing:', error);
-                if (isOffline) {
-                    await loadFromCache();
-                } else {
-                    showError(error.message);
-                }
-            }
-        }
-
-        async function cacheData(data) {
-            try {
-                const cacheKey = `${CACHE_KEY_PREFIX}${callSign}`;
-                const cacheData = {
-                    data: data,
-                    timestamp: new Date().toISOString()
-                };
-                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-            } catch (error) {
-                console.error('Error caching data:', error);
-            }
-        }
-
-        async function loadFromCache() {
-            try {
-                const cacheKey = `${CACHE_KEY_PREFIX}${callSign}`;
-                const cached = localStorage.getItem(cacheKey);
-                
-                if (cached) {
-                    const { data, timestamp } = JSON.parse(cached);
-                    updateUI(data);
-                    elements.updateIndicator.textContent = `Last updated: ${new Date(timestamp).toLocaleTimeString()} (cached)`;
-                    elements.updateIndicator.classList.add('active');
-                }
-            } catch (error) {
-                console.error('Error loading from cache:', error);
-                showError('Could not load cached data');
-            }
-        }
-
-        function updateUI(data) {
-            elements.songTitle.textContent = data.song;
-            elements.artistTitle.textContent = data.artist;
-            elements.songTitle.classList.remove('placeholder-glow');
-            elements.artistTitle.classList.remove('placeholder-glow');
-            elements.spotifyLink.querySelector('a').href = data.spotifySearchUrl;
-
-            // Update star status for current song
-            const songKey = `${data.song}:::${data.artist}`;
-            const currentStarButton = document.getElementById('current-star');
-            currentStarButton.classList.toggle('starred', isSongStarred(songKey));
-            currentStarButton.dataset.songKey = songKey;
-        }
-
-        function updateTimestamp() {
-            const now = new Date();
-            elements.updateIndicator.textContent = `Last updated: ${now.toLocaleTimeString()}`;
-            elements.updateIndicator.classList.add('active');
-        }
-
-        function showError(message) {
-            elements.nowPlayingContainer.style.display = 'none';
-            elements.errorContainer.style.display = 'block';
-            elements.errorMessage.textContent = message;
-            document.title = "Error - Station Not Found";
-            
-            if (pollTimer) {
-                clearInterval(pollTimer);
-                pollTimer = null;
-            }
-        }
-
-        // Load initial history
-        updateHistoryDisplay();
-
-        // Start the polling
-        fetchNowPlaying();
-        pollTimer = setInterval(fetchNowPlaying, POLL_INTERVAL);
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (pollTimer) {
-                clearInterval(pollTimer);
-                pollTimer = null;
-            }
-        });
-
-        async function clearAllCache() {
-            // Clear localStorage
-            const cachePrefix = new RegExp(`^(${CACHE_KEY_PREFIX}|${HISTORY_KEY_PREFIX})`);
-            Object.keys(localStorage).forEach(key => {
-                if (cachePrefix.test(key)) {
-                    localStorage.removeItem(key);
-                }
-            });
-
-            // Clear ServiceWorker cache
-            if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
-                }
-                
-                // Clear all caches
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            if (error) {
+                return (
+                    <div className="container">
+                        <div className="now-playing-card">
+                            <h1 style={{ color: '#ef4444', marginBottom: '1rem' }}>Error</h1>
+                            <p style={{ marginBottom: '1.5rem' }}>{error}</p>
+                            <a href="/" style={{ padding: '0.75rem 1.5rem', background: '#3b82f6', color: 'white', textDecoration: 'none', borderRadius: '8px' }}>Try Again</a>
+                        </div>
+                    </div>
+                );
             }
 
-            // Reload the page
-            window.location.reload();
-        }
+            return (
+                <div className="container">
+                    <div className={`offline-indicator ${isOffline ? 'visible' : ''}`}>
+                        You're offline. Showing last known songs.
+                    </div>
+                    
+                    <NowPlaying
+                        song={currentSong?.song}
+                        artist={currentSong?.artist}
+                        spotifyUrl={currentSong?.spotifySearchUrl}
+                        stationName={callSign}
+                        isStarred={currentSong ? isSongStarred(`${currentSong.song}:::${currentSong.artist}`) : false}
+                        onToggleStar={toggleStar}
+                        lastUpdated={lastUpdated}
+                        isOffline={isOffline}
+                    />
 
-        // Add clear cache button handler
-        document.getElementById('clear-cache').addEventListener('click', clearAllCache);
+                    <History
+                        history={history}
+                        onToggleStar={toggleStar}
+                        isSongStarred={isSongStarred}
+                    />
+                </div>
+            );
+        };
 
-        // Add filter toggle handler
-        elements.showStarredButton.addEventListener('click', () => {
-            showingStarredOnly = !showingStarredOnly;
-            localStorage.setItem(SHOW_STARRED_PREF_KEY, showingStarredOnly);
-            updateHistoryDisplay();
-        });
-
-        // Add star handler for current song
-        document.getElementById('current-star').addEventListener('click', (e) => {
-            const songKey = e.target.dataset.songKey;
-            if (songKey) {
-                toggleStarSong(songKey);
-                e.target.classList.toggle('starred', isSongStarred(songKey));
-            }
-        });
-    });
-</script>
-
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
