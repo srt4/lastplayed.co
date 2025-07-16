@@ -21,6 +21,36 @@
             min-height: 100vh;
         }
         
+        @media (prefers-color-scheme: light) {
+            body {
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                color: #1a202c;
+            }
+            .now-playing-card, .history-card {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border: 1px solid rgba(0, 0, 0, 0.1) !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            }
+            .song-title {
+                color: #2563eb !important;
+            }
+            .history-title {
+                color: #2563eb !important;
+            }
+            .artist-title {
+                color: #475569 !important;
+            }
+            .history-artist {
+                color: #64748b !important;
+            }
+            .history-time {
+                color: #94a3b8 !important;
+            }
+            .star-button {
+                color: #94a3b8 !important;
+            }
+        }
+        
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
