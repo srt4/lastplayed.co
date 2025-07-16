@@ -564,7 +564,7 @@
                 }
                 
                 localStorage.setItem(STARRED_KEY, JSON.stringify(starredSongs));
-                updateHistoryDisplay();
+                updateHistoryDisplay(true);
             } catch (e) {
                 console.error('Error toggling star:', e);
             }
@@ -580,7 +580,7 @@
             }
         }
 
-        function updateHistoryDisplay() {
+        function updateHistoryDisplay(skipAnimation = false) {
             const history = loadHistory();
             const container = elements.historyContainer;
             container.innerHTML = '';
@@ -634,8 +634,13 @@
                     toggleStarSong(songKey);
                 });
                 
-                // Add staggered delay for history cards
-                card.style.animationDelay = `${index * 0.05}s`;
+                // Add staggered delay for history cards only on initial load
+                if (!skipAnimation) {
+                    card.style.animationDelay = `${index * 0.05}s`;
+                } else {
+                    card.style.animation = 'none';
+                    card.style.opacity = '1';
+                }
             });
 
             if (history.length > 0) {
