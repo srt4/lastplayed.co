@@ -472,7 +472,9 @@
             const [storedValue, setStoredValue] = useState(() => {
                 try {
                     const item = window.localStorage.getItem(key);
-                    return item ? JSON.parse(item) : initialValue;
+                    const value = item ? JSON.parse(item) : initialValue;
+                    console.log(`Loaded from localStorage [${key}]:`, value);
+                    return value;
                 } catch (error) {
                     console.error(`Error reading localStorage key "${key}":`, error);
                     return initialValue;
@@ -496,6 +498,35 @@
         const useNowPlaying = (callSign) => {
             const [currentSong, setCurrentSong] = useState(null);
             const historyKey = `history_${callSign || 'default'}`;
+            
+            // Migrate old lowercase data to new uppercase format
+            useEffect(() => {
+                if (callSign) {
+                    const oldHistoryKey = `history_${callSign.toLowerCase()}`;
+                    const newHistoryKey = `history_${callSign}`;
+                    
+                    // Check if we have old data but no new data
+                    const oldData = localStorage.getItem(oldHistoryKey);
+                    const newData = localStorage.getItem(newHistoryKey);
+                    
+                    if (oldData && (!newData || newData === 'undefined')) {
+                        console.log(`Migrating history from ${oldHistoryKey} to ${newHistoryKey}`);
+                        localStorage.setItem(newHistoryKey, oldData);
+                    }
+                    
+                    // Same for cache data
+                    const oldCacheKey = `nowplaying_${callSign.toLowerCase()}`;
+                    const newCacheKey = `nowplaying_${callSign}`;
+                    const oldCacheData = localStorage.getItem(oldCacheKey);
+                    const newCacheData = localStorage.getItem(newCacheKey);
+                    
+                    if (oldCacheData && (!newCacheData || newCacheData === 'undefined')) {
+                        console.log(`Migrating cache from ${oldCacheKey} to ${newCacheKey}`);
+                        localStorage.setItem(newCacheKey, oldCacheData);
+                    }
+                }
+            }, [callSign]);
+            
             const [history, setHistory] = useLocalStorage(historyKey, []);
             const [starredSongs, setStarredSongs] = useLocalStorage('starred_songs', []);
             const [isLoading, setIsLoading] = useState(true);
