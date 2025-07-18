@@ -25,7 +25,7 @@
 
         @media (prefers-color-scheme: light) {
             body {
-                background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 50%, #60a5fa 100%);
+                background: linear-gradient(135deg, #f0f9ff 0%, #bfdbfe 30%, #3b82f6 100%);
                 color: #1e293b;
             }
         }
@@ -72,9 +72,9 @@
 
         @media (prefers-color-scheme: light) {
             .now-playing-card {
-                background: rgba(255, 255, 255, 0.95) !important;
-                border: 1px solid rgba(147, 197, 253, 0.3) !important;
-                box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15) !important;
+                background: rgba(255, 255, 255, 0.9) !important;
+                border: 1px solid rgba(59, 130, 246, 0.2) !important;
+                box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1) !important;
             }
         }
 
@@ -137,7 +137,7 @@
 
         @media (prefers-color-scheme: light) {
             .song-title {
-                color: #1d4ed8 !important;
+                color: #2563eb !important;
             }
         }
 
@@ -284,9 +284,9 @@
 
         @media (prefers-color-scheme: light) {
             .history-card {
-                background: rgba(255, 255, 255, 0.95) !important;
-                border: 1px solid rgba(147, 197, 253, 0.3) !important;
-                box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15) !important;
+                background: rgba(255, 255, 255, 0.8) !important;
+                border: 1px solid rgba(59, 130, 246, 0.15) !important;
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.08) !important;
             }
         }
 
@@ -326,7 +326,7 @@
 
         @media (prefers-color-scheme: light) {
             .history-title {
-                color: #1d4ed8 !important;
+                color: #2563eb !important;
             }
         }
 
@@ -669,6 +669,49 @@
             );
         };
 
+        // History Item component (memoized to prevent flickering)
+        const HistoryItem = React.memo(({ item, index, onToggleStar, isStarred }) => {
+            const songKey = `${item.song}:::${item.artist}`;
+            
+            const formatTime = (timestamp) => {
+                const time = new Date(timestamp);
+                const now = new Date();
+                
+                if (time.toDateString() === now.toDateString()) {
+                    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    return time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
+                           ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            };
+            
+            return (
+                <div 
+                    className="history-card"
+                    style={{ animationDelay: `${index * 0.05}s`, animationFillMode: 'both' }}
+                >
+                    <div className="history-content">
+                        <div className="history-info">
+                            <h6 className="history-title">{item.song}</h6>
+                            <p className="history-artist">{item.artist}</p>
+                            <p className="history-time">{formatTime(item.timestamp)}</p>
+                        </div>
+                        <div className="history-actions">
+                            <button 
+                                className={`star-button ${isStarred ? 'starred' : ''}`}
+                                onClick={() => onToggleStar(songKey)}
+                            >
+                                ★
+                            </button>
+                            <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
+                                <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+
         // History component
         const History = ({ history, onToggleStar, isSongStarred }) => {
             const [showingStarredOnly, setShowingStarredOnly] = useState(false);
@@ -711,30 +754,13 @@
                             const isStarred = isSongStarred(songKey);
                             
                             return (
-                                <div 
+                                <HistoryItem 
                                     key={`${songKey}-${item.timestamp}`}
-                                    className="history-card"
-                                    style={{ animationDelay: `${index * 0.05}s` }}
-                                >
-                                    <div className="history-content">
-                                        <div className="history-info">
-                                            <h6 className="history-title">{item.song}</h6>
-                                            <p className="history-artist">{item.artist}</p>
-                                            <p className="history-time">{formatTime(item.timestamp)}</p>
-                                        </div>
-                                        <div className="history-actions">
-                                            <button 
-                                                className={`star-button ${isStarred ? 'starred' : ''}`}
-                                                onClick={() => onToggleStar(songKey)}
-                                            >
-                                                ★
-                                            </button>
-                                            <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
-                                                <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                                    item={item}
+                                    index={index}
+                                    onToggleStar={onToggleStar}
+                                    isStarred={isStarred}
+                                />
                             );
                         })}
                     </div>
