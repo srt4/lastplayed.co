@@ -483,6 +483,7 @@
                 try {
                     setStoredValue(value);
                     window.localStorage.setItem(key, JSON.stringify(value));
+                    console.log(`Saved to localStorage [${key}]:`, value);
                 } catch (error) {
                     console.error(`Error setting localStorage key "${key}":`, error);
                 }
@@ -494,7 +495,8 @@
         // Custom hook for now playing data
         const useNowPlaying = (callSign) => {
             const [currentSong, setCurrentSong] = useState(null);
-            const [history, setHistory] = useLocalStorage(`history_${callSign}`, []);
+            const historyKey = `history_${callSign || 'default'}`;
+            const [history, setHistory] = useLocalStorage(historyKey, []);
             const [starredSongs, setStarredSongs] = useLocalStorage('starred_songs', []);
             const [isLoading, setIsLoading] = useState(true);
             const [error, setError] = useState(null);
@@ -527,12 +529,14 @@
                                 const newHistory = prev.filter(
                                     item => !(item.song === data.song && item.artist === data.artist)
                                 );
-                                return [{
+                                const updatedHistory = [{
                                     song: data.song,
                                     artist: data.artist,
                                     timestamp: new Date().toISOString(),
                                     spotifyUrl: data.spotifySearchUrl
                                 }, ...newHistory].slice(0, MAX_HISTORY_ITEMS);
+                                console.log('Updating history:', updatedHistory);
+                                return updatedHistory;
                             });
                         }
                     }
@@ -549,7 +553,7 @@
                 } finally {
                     setIsLoading(false);
                 }
-            }, [callSign, currentSong, isOffline, setHistory]);
+            }, [callSign, currentSong, isOffline]);
 
             const loadFromCache = useCallback(() => {
                 try {
