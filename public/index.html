@@ -335,6 +335,49 @@
             from { text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
             to { text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
         }
+        
+        .station-break-container {
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .station-break-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: radioWave 3s ease-in-out infinite;
+        }
+        
+        .station-break-title {
+            font-size: 2.5rem;
+            color: #00d4aa;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-break-title {
+                color: #1d4ed8 !important;
+            }
+        }
+        
+        .station-break-text {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-style: italic;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-break-text {
+                color: #475569 !important;
+            }
+        }
+        
+        @keyframes radioWave {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(-5deg); }
+            75% { transform: scale(0.95) rotate(5deg); }
+        }
 
         .now-playing-actions {
             display: flex;
@@ -513,6 +556,24 @@
 
     const NowPlaying = ({ callSign, currentSong, lastUpdated, isStarred, onToggleStar }) => {
         const songKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
+        const isEmpty = currentSong && (!currentSong.song || !currentSong.artist || 
+                        currentSong.song.trim() === '' || currentSong.artist.trim() === '');
+        
+        if (isEmpty) {
+            return (
+                <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
+                    <h4 className="fw-bold mb-4">Now Playing on {callSign.toUpperCase()}</h4>
+                    <div className="station-break-container">
+                        <div className="station-break-icon">📻</div>
+                        <h2 className="station-break-title">Station Break</h2>
+                        <p className="station-break-text">We'll be right back with more music!</p>
+                    </div>
+                    <div className="update-indicator" style={{opacity: lastUpdated ? 1 : 0}}>
+                        Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+                    </div>
+                </div>
+            );
+        }
         
         return (
             <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
