@@ -6,6 +6,9 @@
     <title>Now Playing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         
         #clear-cache {
@@ -353,71 +356,23 @@
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-<div class="container d-flex justify-content-center flex-column align-items-center">
-    <div id="offline-indicator" class="offline-indicator">
-        You're offline. Showing last known songs.
-    </div>
-    <button id="clear-cache" class="btn btn-sm btn-outline-danger mb-3">Clear Cache</button>
-    <div id="now-playing-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
-        <h4 class="fw-bold mb-4">Now Playing on <span id="station-name">...</span></h4>
-        <div class="mb-4">
-            <h5 class="text-uppercase text-secondary">Song</h5>
-            <h1 id="song-title" class="song-title mb-2 text-truncate placeholder-glow"><span class="placeholder col-10"></span></h1>
-        </div>
-        <div class="mb-5">
-            <h5 class="text-uppercase text-secondary">Artist</h5>
-            <h1 id="artist-title" class="artist-title text-truncate placeholder-glow"><span class="placeholder col-8"></span></h1>
-        </div>
-        <div class="now-playing-actions">
-            <div class="spotify-link">
-                <span id="spotify-link">
-                    <a href="#" target="_blank">
-                        <img src="/thirdParty/spotify.svg" alt="Open in Spotify">
-                    </a>
-                </span>
-            </div>
-            <button id="current-star" class="star-button" style="font-size: 2rem;">★</button>
-        </div>
-        <div id="update-indicator" class="update-indicator">Last updated: Never</div>
-    </div>
+<script type="text/babel">
+    const { useState, useEffect, useCallback, useMemo } = React;
 
-    <!-- History Section -->
-    <div id="history-section" class="history-section w-100" style="max-width: 700px;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="text-center mb-0">Previously Played</h5>
-            <button id="show-starred" class="btn btn-sm btn-warning">
-                Show Starred Only
-            </button>
-        </div>
-        <div id="history-container">
-            <!-- History cards will be inserted here -->
-        </div>
-    </div>
-
-    <div id="error-container" class="now-playing-card text-center w-100" style="max-width: 700px;">
-        <h1 class="display-4 text-danger">Error</h1>
-        <p id="error-message" class="lead"></p>
-        <a href="/" class="btn btn-primary mt-3">Try Again</a>
-    </div>
-</div>
-
-<script>
-    // Register service worker
+    // Service Worker Registration (same as before)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
             try {
-                // First try to unregister any existing service workers
                 const registrations = await navigator.serviceWorker.getRegistrations();
                 for (let registration of registrations) {
                     await registration.unregister();
                 }
                 
-                // Clear all caches before registering new service worker
                 const cacheNames = await caches.keys();
                 await Promise.all(cacheNames.map(name => caches.delete(name)));
                 
-                // Now register the new service worker
                 await navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime());
                 console.log('ServiceWorker registration successful');
             } catch (err) {
@@ -426,234 +381,263 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const POLL_INTERVAL = 20000; // Poll every 20 seconds
-        const CACHE_KEY_PREFIX = 'nowplaying_';
-        const HISTORY_KEY_PREFIX = 'history_';
-        const STARRED_KEY = 'starred_songs';
-        const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
-        const MAX_HISTORY_ITEMS = 10;
-        let currentSong = null;
-        let pollTimer = null;
-        let isOffline = !navigator.onLine;
-        let showingStarredOnly = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
+    // Constants - EXACT same as vanilla JS to maintain localStorage compatibility
+    const POLL_INTERVAL = 20000;
+    const CACHE_KEY_PREFIX = 'nowplaying_';
+    const HISTORY_KEY_PREFIX = 'history_';
+    const STARRED_KEY = 'starred_songs';
+    const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
+    const MAX_HISTORY_ITEMS = 10;
 
-        const elements = {
-            stationName: document.getElementById('station-name'),
-            songTitle: document.getElementById('song-title'),
-            artistTitle: document.getElementById('artist-title'),
-            spotifyLink: document.getElementById('spotify-link'),
-            nowPlayingContainer: document.getElementById('now-playing-container'),
-            errorContainer: document.getElementById('error-container'),
-            errorMessage: document.getElementById('error-message'),
-            updateIndicator: document.getElementById('update-indicator'),
-            offlineIndicator: document.getElementById('offline-indicator'),
-            historySection: document.getElementById('history-section'),
-            historyContainer: document.getElementById('history-container'),
-            showStarredButton: document.getElementById('show-starred')
-        };
+    // Utility functions - EXACT same logic as vanilla JS
+    const getHistoryKey = (callSign) => `${HISTORY_KEY_PREFIX}${callSign}`;
+    const getCacheKey = (callSign) => `${CACHE_KEY_PREFIX}${callSign}`;
 
-        // Get call sign from subdomain instead of hash
-        const hostname = window.location.hostname;
-        const callSign = hostname.split('.')[0];
-
-        if (!callSign || callSign === 'www' || callSign === 'currently') {
-            // Show station list instead of error
-            elements.nowPlayingContainer.style.display = 'none';
-            elements.errorContainer.style.display = 'block';
-            elements.errorMessage.innerHTML = `
-                <h3>Choose a Radio Station:</h3>
-                <div class="list-group mt-3">
-                    <a href="https://kexp.currently.rocks" class="list-group-item list-group-item-action">KEXP - Seattle</a>
-                    <a href="https://kxly.currently.rocks" class="list-group-item list-group-item-action">KXLY - Spokane</a>
-                    <a href="https://kbcs.currently.rocks" class="list-group-item list-group-item-action">KBCS - Bellevue</a>
-                    <a href="https://kbfg.currently.rocks" class="list-group-item list-group-item-action">KBFG - Seattle</a>
-                    <a href="https://kmgp.currently.rocks" class="list-group-item list-group-item-action">KMGP - Seattle</a>
-                    <a href="https://kndd.currently.rocks" class="list-group-item list-group-item-action">KNDD - Seattle</a>
-                    <a href="https://kpnw.currently.rocks" class="list-group-item list-group-item-action">KPNW - Seattle</a>
-                    <a href="https://kutx.currently.rocks" class="list-group-item list-group-item-action">KUTX - Austin</a>
-                    <a href="https://kxsu.currently.rocks" class="list-group-item list-group-item-action">KXSU - Seattle</a>
-                    <a href="https://kzok.currently.rocks" class="list-group-item list-group-item-action">KZOK - Seattle</a>
-                    <a href="https://ckkq.currently.rocks" class="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
-                </div>
-            `;
-            document.title = "Choose a Radio Station";
-            return;
+    const loadHistory = (callSign) => {
+        try {
+            const history = JSON.parse(localStorage.getItem(getHistoryKey(callSign)) || '[]');
+            return history;
+        } catch (e) {
+            console.error('Error loading history:', e);
+            return [];
         }
+    };
 
-        elements.stationName.textContent = callSign.toUpperCase();
-        document.title = `Now Playing on ${callSign.toUpperCase()}`;
+    const saveToHistory = (callSign, song) => {
+        if (!song || !song.song || !song.artist) return;
 
-        // Handle online/offline status
-        window.addEventListener('online', handleOnlineStatus);
-        window.addEventListener('offline', handleOnlineStatus);
-
-        function handleOnlineStatus() {
-            isOffline = !navigator.onLine;
-            elements.offlineIndicator.classList.toggle('visible', isOffline);
+        try {
+            let history = loadHistory(callSign);
             
-            if (isOffline) {
-                loadFromCache();
-            } else {
-                fetchNowPlaying();
+            // Check if this song is different from the last one
+            const lastSong = history[0];
+            if (lastSong && lastSong.song === song.song && lastSong.artist === song.artist) {
+                return;
             }
-        }
 
-        function getHistoryKey() {
-            return `${HISTORY_KEY_PREFIX}${callSign}`;
-        }
-
-        function loadHistory() {
-            try {
-                const history = JSON.parse(localStorage.getItem(getHistoryKey()) || '[]');
-                return history;
-            } catch (e) {
-                console.error('Error loading history:', e);
-                return [];
-            }
-        }
-
-        function saveToHistory(song) {
-            if (!song || !song.song || !song.artist) return;
-
-            try {
-                let history = loadHistory();
-                
-                // Check if this song is different from the last one
-                const lastSong = history[0];
-                if (lastSong && lastSong.song === song.song && lastSong.artist === song.artist) {
-                    return;
-                }
-
-                // Add new song to the beginning
-                history.unshift({
-                    song: song.song,
-                    artist: song.artist,
-                    timestamp: new Date().toISOString(),
-                    spotifyUrl: song.spotifySearchUrl
-                });
-
-                // Keep only the last MAX_HISTORY_ITEMS
-                history = history.slice(0, MAX_HISTORY_ITEMS);
-
-                localStorage.setItem(getHistoryKey(), JSON.stringify(history));
-                updateHistoryDisplay();
-            } catch (e) {
-                console.error('Error saving to history:', e);
-            }
-        }
-
-        function getStarredSongs() {
-            try {
-                return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
-            } catch (e) {
-                console.error('Error loading starred songs:', e);
-                return [];
-            }
-        }
-
-        function toggleStarSong(songKey) {
-            try {
-                const starredSongs = getStarredSongs();
-                const index = starredSongs.indexOf(songKey);
-                
-                if (index === -1) {
-                    starredSongs.push(songKey);
-                } else {
-                    starredSongs.splice(index, 1);
-                }
-                
-                localStorage.setItem(STARRED_KEY, JSON.stringify(starredSongs));
-                updateHistoryDisplay(true);
-            } catch (e) {
-                console.error('Error toggling star:', e);
-            }
-        }
-
-        function isSongStarred(songKey) {
-            try {
-                const starredSongs = getStarredSongs();
-                return starredSongs.includes(songKey);
-            } catch (e) {
-                console.error('Error checking star status:', e);
-                return false;
-            }
-        }
-
-        function updateHistoryDisplay(skipAnimation = false) {
-            const history = loadHistory();
-            const container = elements.historyContainer;
-            container.innerHTML = '';
-
-            const filteredHistory = showingStarredOnly 
-                ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`))
-                : history;
-
-            filteredHistory.forEach((item, index) => {
-                const time = new Date(item.timestamp);
-                const now = new Date();
-                let timeString;
-                
-                // Check if the song was played today
-                if (time.toDateString() === now.toDateString()) {
-                    timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                } else {
-                    timeString = time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
-                                ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-
-                const songKey = `${item.song}:::${item.artist}`;
-                const isStarred = isSongStarred(songKey);
-                
-                const card = document.createElement('div');
-                card.innerHTML = `
-                    <div class="history-card">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="history-title text-truncate w-100">${item.song}</h6>
-                                <p class="history-artist text-truncate w-100">${item.artist}</p>
-                                <p class="history-time">${timeString}</p>
-                            </div>
-                            <div class="history-actions">
-                                <button class="star-button ${isStarred ? 'starred' : ''}" data-song-key="${songKey}">
-                                    ★
-                                </button>
-                                <a href="${item.spotifyUrl}" target="_blank">
-                                    <img src="/thirdParty/spotify.svg" class="history-spotify" alt="Open in Spotify">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-
-                // Add click handler for star button
-                const starButton = card.querySelector('.star-button');
-                starButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggleStarSong(songKey);
-                });
-                
-                // Add staggered delay for history cards only on initial load
-                if (!skipAnimation) {
-                    card.style.animationDelay = `${index * 0.05}s`;
-                } else {
-                    card.style.animation = 'none';
-                    card.style.opacity = '1';
-                }
+            // Add new song to the beginning
+            history.unshift({
+                song: song.song,
+                artist: song.artist,
+                timestamp: new Date().toISOString(),
+                spotifyUrl: song.spotifySearchUrl
             });
 
-            if (history.length > 0) {
-                elements.historySection.classList.add('visible');
-            }
+            // Keep only the last MAX_HISTORY_ITEMS
+            history = history.slice(0, MAX_HISTORY_ITEMS);
 
-            // Update filter button text and style
-            const btn = elements.showStarredButton;
-            btn.textContent = showingStarredOnly ? 'Show All' : 'Show Starred Only';
-            btn.className = 'btn btn-sm btn-warning';
+            localStorage.setItem(getHistoryKey(callSign), JSON.stringify(history));
+            return history;
+        } catch (e) {
+            console.error('Error saving to history:', e);
+            return loadHistory(callSign);
         }
+    };
 
-        async function fetchNowPlaying() {
+    const getStarredSongs = () => {
+        try {
+            return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
+        } catch (e) {
+            console.error('Error loading starred songs:', e);
+            return [];
+        }
+    };
+
+    const toggleStarSong = (songKey) => {
+        try {
+            const starredSongs = getStarredSongs();
+            const index = starredSongs.indexOf(songKey);
+            
+            let newStarredSongs;
+            if (index === -1) {
+                newStarredSongs = [...starredSongs, songKey];
+            } else {
+                newStarredSongs = starredSongs.filter(key => key !== songKey);
+            }
+            
+            localStorage.setItem(STARRED_KEY, JSON.stringify(newStarredSongs));
+            return newStarredSongs;
+        } catch (e) {
+            console.error('Error toggling star:', e);
+            return getStarredSongs();
+        }
+    };
+
+    const isSongStarred = (songKey, starredSongs) => {
+        return starredSongs.includes(songKey);
+    };
+
+    // React Components
+    const StationList = () => (
+        <div className="container d-flex justify-content-center flex-column align-items-center">
+            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
+                <h3>Choose a Radio Station:</h3>
+                <div className="list-group mt-3">
+                    <a href="https://kexp.currently.rocks" className="list-group-item list-group-item-action">KEXP - Seattle</a>
+                    <a href="https://kxly.currently.rocks" className="list-group-item list-group-item-action">KXLY - Spokane</a>
+                    <a href="https://kbcs.currently.rocks" className="list-group-item list-group-item-action">KBCS - Bellevue</a>
+                    <a href="https://kbfg.currently.rocks" className="list-group-item list-group-item-action">KBFG - Seattle</a>
+                    <a href="https://kmgp.currently.rocks" className="list-group-item list-group-item-action">KMGP - Seattle</a>
+                    <a href="https://kndd.currently.rocks" className="list-group-item list-group-item-action">KNDD - Seattle</a>
+                    <a href="https://kpnw.currently.rocks" className="list-group-item list-group-item-action">KPNW - Seattle</a>
+                    <a href="https://kutx.currently.rocks" className="list-group-item list-group-item-action">KUTX - Austin</a>
+                    <a href="https://kxsu.currently.rocks" className="list-group-item list-group-item-action">KXSU - Seattle</a>
+                    <a href="https://kzok.currently.rocks" className="list-group-item list-group-item-action">KZOK - Seattle</a>
+                    <a href="https://ckkq.currently.rocks" className="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
+                </div>
+            </div>
+        </div>
+    );
+
+    const ErrorDisplay = ({ message }) => (
+        <div className="container d-flex justify-content-center flex-column align-items-center">
+            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
+                <h1 className="display-4 text-danger">Error</h1>
+                <p className="lead">{message}</p>
+                <a href="/" className="btn btn-primary mt-3">Try Again</a>
+            </div>
+        </div>
+    );
+
+    const NowPlaying = ({ callSign, currentSong, lastUpdated, isStarred, onToggleStar }) => {
+        const songKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
+        
+        return (
+            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
+                <h4 className="fw-bold mb-4">Now Playing on {callSign.toUpperCase()}</h4>
+                <div className="mb-4">
+                    <h5 className="text-uppercase text-secondary">Song</h5>
+                    <h1 className={`song-title mb-2 text-truncate ${!currentSong ? 'placeholder-glow' : ''}`}>
+                        {currentSong ? currentSong.song : <span className="placeholder col-10"></span>}
+                    </h1>
+                </div>
+                <div className="mb-5">
+                    <h5 className="text-uppercase text-secondary">Artist</h5>
+                    <h1 className={`artist-title text-truncate ${!currentSong ? 'placeholder-glow' : ''}`}>
+                        {currentSong ? currentSong.artist : <span className="placeholder col-8"></span>}
+                    </h1>
+                </div>
+                <div className="now-playing-actions">
+                    <div className="spotify-link">
+                        <a href={currentSong?.spotifySearchUrl || "#"} target="_blank" rel="noopener noreferrer">
+                            <img src="/thirdParty/spotify.svg" alt="Open in Spotify" />
+                        </a>
+                    </div>
+                    <button 
+                        className={`star-button ${isStarred ? 'starred' : ''}`}
+                        style={{fontSize: '2rem'}}
+                        onClick={() => currentSong && onToggleStar(songKey)}
+                    >
+                        ★
+                    </button>
+                </div>
+                <div className="update-indicator" style={{opacity: lastUpdated ? 1 : 0}}>
+                    Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+                </div>
+            </div>
+        );
+    };
+
+    const History = ({ callSign, history, starredSongs, onToggleStar, showingStarredOnly, onToggleFilter }) => {
+        const filteredHistory = showingStarredOnly 
+            ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`, starredSongs))
+            : history;
+
+        const formatTime = (timestamp) => {
+            const time = new Date(timestamp);
+            const now = new Date();
+            
+            if (time.toDateString() === now.toDateString()) {
+                return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else {
+                return time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
+                       ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        };
+
+        if (history.length === 0) return null;
+
+        return (
+            <div className="history-section w-100 visible" style={{maxWidth: '700px'}}>
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h5 className="text-center mb-0">Previously Played</h5>
+                    <button 
+                        className="btn btn-sm btn-warning"
+                        onClick={onToggleFilter}
+                    >
+                        {showingStarredOnly ? 'Show All' : 'Show Starred Only'}
+                    </button>
+                </div>
+                <div>
+                    {filteredHistory.map((item, index) => {
+                        const songKey = `${item.song}:::${item.artist}`;
+                        const isStarred = isSongStarred(songKey, starredSongs);
+                        
+                        return (
+                            <div 
+                                key={`${songKey}-${item.timestamp}`}
+                                className="history-card"
+                                style={{animationDelay: `${index * 0.05}s`}}
+                            >
+                                <div className="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 className="history-title text-truncate w-100">{item.song}</h6>
+                                        <p className="history-artist text-truncate w-100">{item.artist}</p>
+                                        <p className="history-time">{formatTime(item.timestamp)}</p>
+                                    </div>
+                                    <div className="history-actions">
+                                        <button 
+                                            className={`star-button ${isStarred ? 'starred' : ''}`}
+                                            onClick={() => onToggleStar(songKey)}
+                                        >
+                                            ★
+                                        </button>
+                                        <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
+                                            <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
+    // Main App Component
+    const App = () => {
+        const [callSign, setCallSign] = useState('');
+        const [currentSong, setCurrentSong] = useState(null);
+        const [history, setHistory] = useState([]);
+        const [starredSongs, setStarredSongs] = useState([]);
+        const [lastUpdated, setLastUpdated] = useState(null);
+        const [error, setError] = useState(null);
+        const [isOffline, setIsOffline] = useState(!navigator.onLine);
+        const [showingStarredOnly, setShowingStarredOnly] = useState(false);
+
+        // Get call sign from subdomain
+        useEffect(() => {
+            const hostname = window.location.hostname;
+            const cs = hostname.split('.')[0];
+            setCallSign(cs);
+            
+            if (cs && cs !== 'www' && cs !== 'currently') {
+                document.title = `Now Playing on ${cs.toUpperCase()}`;
+                // Load initial data from localStorage using EXACT same keys
+                setHistory(loadHistory(cs));
+                setStarredSongs(getStarredSongs());
+                const showStarred = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
+                setShowingStarredOnly(showStarred);
+            } else {
+                document.title = "Choose a Radio Station";
+            }
+        }, []);
+
+        // Fetch now playing data
+        const fetchNowPlaying = useCallback(async () => {
+            if (!callSign || callSign === 'www' || callSign === 'currently') return;
+
             try {
                 const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
                 const data = await response.json();
@@ -662,150 +646,135 @@
                     throw new Error(data.error || `HTTP error! status: ${response.status}`);
                 }
 
-                // Cache the successful response
-                await cacheData(data);
+                // Cache the successful response using EXACT same key
+                const cacheKey = getCacheKey(callSign);
+                const cacheData = { data, timestamp: new Date().toISOString() };
+                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
 
                 // Only update if the song has changed
                 if (!currentSong || currentSong.song !== data.song || currentSong.artist !== data.artist) {
-                    currentSong = data;
-                    updateUI(data);
-                    saveToHistory(data);
+                    setCurrentSong(data);
+                    // Save to history using EXACT same logic
+                    const newHistory = saveToHistory(callSign, data);
+                    if (newHistory) setHistory(newHistory);
                 }
 
-                // Update timestamp even if song hasn't changed
-                updateTimestamp();
-
-            } catch (error) {
-                console.error('Error fetching now playing:', error);
+                setLastUpdated(new Date());
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching now playing:', err);
                 if (isOffline) {
-                    await loadFromCache();
+                    loadFromCache();
                 } else {
-                    showError(error.message);
+                    setError(err.message);
                 }
             }
-        }
+        }, [callSign, currentSong, isOffline]);
 
-        async function cacheData(data) {
+        const loadFromCache = useCallback(() => {
             try {
-                const cacheKey = `${CACHE_KEY_PREFIX}${callSign}`;
-                const cacheData = {
-                    data: data,
-                    timestamp: new Date().toISOString()
-                };
-                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-            } catch (error) {
-                console.error('Error caching data:', error);
-            }
-        }
-
-        async function loadFromCache() {
-            try {
-                const cacheKey = `${CACHE_KEY_PREFIX}${callSign}`;
+                const cacheKey = getCacheKey(callSign);
                 const cached = localStorage.getItem(cacheKey);
                 
                 if (cached) {
                     const { data, timestamp } = JSON.parse(cached);
-                    updateUI(data);
-                    elements.updateIndicator.textContent = `Last updated: ${new Date(timestamp).toLocaleTimeString()} (cached)`;
-                    elements.updateIndicator.classList.add('active');
+                    setCurrentSong(data);
+                    setLastUpdated(new Date(timestamp));
                 }
             } catch (error) {
                 console.error('Error loading from cache:', error);
-                showError('Could not load cached data');
+                setError('Could not load cached data');
             }
-        }
+        }, [callSign]);
 
-        function updateUI(data) {
-            elements.songTitle.textContent = data.song;
-            elements.artistTitle.textContent = data.artist;
-            elements.songTitle.classList.remove('placeholder-glow');
-            elements.artistTitle.classList.remove('placeholder-glow');
-            elements.spotifyLink.querySelector('a').href = data.spotifySearchUrl;
+        // Handle online/offline status
+        useEffect(() => {
+            const handleOnlineStatus = () => {
+                setIsOffline(!navigator.onLine);
+                if (!navigator.onLine) {
+                    loadFromCache();
+                } else {
+                    fetchNowPlaying();
+                }
+            };
 
-            // Update star status for current song
-            const songKey = `${data.song}:::${data.artist}`;
-            const currentStarButton = document.getElementById('current-star');
-            currentStarButton.classList.toggle('starred', isSongStarred(songKey));
-            currentStarButton.dataset.songKey = songKey;
-        }
-
-        function updateTimestamp() {
-            const now = new Date();
-            elements.updateIndicator.textContent = `Last updated: ${now.toLocaleTimeString()}`;
-            elements.updateIndicator.classList.add('active');
-        }
-
-        function showError(message) {
-            elements.nowPlayingContainer.style.display = 'none';
-            elements.errorContainer.style.display = 'block';
-            elements.errorMessage.textContent = message;
-            document.title = "Error - Station Not Found";
+            window.addEventListener('online', handleOnlineStatus);
+            window.addEventListener('offline', handleOnlineStatus);
             
-            if (pollTimer) {
-                clearInterval(pollTimer);
-                pollTimer = null;
+            return () => {
+                window.removeEventListener('online', handleOnlineStatus);
+                window.removeEventListener('offline', handleOnlineStatus);
+            };
+        }, [fetchNowPlaying, loadFromCache]);
+
+        // Polling
+        useEffect(() => {
+            if (callSign && callSign !== 'www' && callSign !== 'currently') {
+                fetchNowPlaying();
+                const interval = setInterval(fetchNowPlaying, POLL_INTERVAL);
+                return () => clearInterval(interval);
             }
+        }, [fetchNowPlaying, callSign]);
+
+        const handleToggleStar = useCallback((songKey) => {
+            const newStarredSongs = toggleStarSong(songKey);
+            setStarredSongs(newStarredSongs);
+        }, []);
+
+        const handleToggleFilter = useCallback(() => {
+            const newValue = !showingStarredOnly;
+            setShowingStarredOnly(newValue);
+            localStorage.setItem(SHOW_STARRED_PREF_KEY, newValue);
+        }, [showingStarredOnly]);
+
+        // Show station list if no valid call sign
+        if (!callSign || callSign === 'www' || callSign === 'currently') {
+            return <StationList />;
         }
 
-        // Load initial history
-        updateHistoryDisplay();
+        // Show error if there's an error
+        if (error) {
+            return <ErrorDisplay message={error} />;
+        }
 
-        // Start the polling
-        fetchNowPlaying();
-        pollTimer = setInterval(fetchNowPlaying, POLL_INTERVAL);
+        const currentSongKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
+        const isCurrentSongStarred = currentSong ? isSongStarred(currentSongKey, starredSongs) : false;
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (pollTimer) {
-                clearInterval(pollTimer);
-                pollTimer = null;
-            }
-        });
-
-        async function clearAllCache() {
-            // Clear localStorage
-            const cachePrefix = new RegExp(`^(${CACHE_KEY_PREFIX}|${HISTORY_KEY_PREFIX})`);
-            Object.keys(localStorage).forEach(key => {
-                if (cachePrefix.test(key)) {
-                    localStorage.removeItem(key);
-                }
-            });
-
-            // Clear ServiceWorker cache
-            if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
-                }
+        return (
+            <div className="container d-flex justify-content-center flex-column align-items-center">
+                <div className={`offline-indicator ${isOffline ? 'visible' : ''}`}>
+                    You're offline. Showing last known songs.
+                </div>
+                <button 
+                    className="btn btn-sm btn-outline-danger mb-3"
+                    style={{visibility: 'hidden'}}
+                    onClick={() => window.location.reload()}
+                >
+                    Clear Cache
+                </button>
                 
-                // Clear all caches
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-            }
+                <NowPlaying 
+                    callSign={callSign}
+                    currentSong={currentSong}
+                    lastUpdated={lastUpdated}
+                    isStarred={isCurrentSongStarred}
+                    onToggleStar={handleToggleStar}
+                />
 
-            // Reload the page
-            window.location.reload();
-        }
+                <History
+                    callSign={callSign}
+                    history={history}
+                    starredSongs={starredSongs}
+                    onToggleStar={handleToggleStar}
+                    showingStarredOnly={showingStarredOnly}
+                    onToggleFilter={handleToggleFilter}
+                />
+            </div>
+        );
+    };
 
-        // Add clear cache button handler
-        document.getElementById('clear-cache').addEventListener('click', clearAllCache);
-
-        // Add filter toggle handler
-        elements.showStarredButton.addEventListener('click', () => {
-            showingStarredOnly = !showingStarredOnly;
-            localStorage.setItem(SHOW_STARRED_PREF_KEY, showingStarredOnly);
-            updateHistoryDisplay();
-        });
-
-        // Add star handler for current song
-        document.getElementById('current-star').addEventListener('click', (e) => {
-            const songKey = e.target.dataset.songKey;
-            if (songKey) {
-                toggleStarSong(songKey);
-                e.target.classList.toggle('starred', isSongStarred(songKey));
-            }
-        });
-    });
+    // Render the app
+    ReactDOM.render(<App />, document.getElementById('root'));
 </script>
 
 </body>
