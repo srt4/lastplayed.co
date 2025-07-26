@@ -83,7 +83,7 @@ const History = ({ history, starredSongs, onToggleStar, isSongStarred }) => {
         })}
       </div>
       {totalPages > 1 && (
-        <div className="history-pagination" style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', gap: '1rem' }}>
+        <div className="history-pagination">
           <button
             className="filter-button"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -91,7 +91,7 @@ const History = ({ history, starredSongs, onToggleStar, isSongStarred }) => {
           >
             Previous
           </button>
-          <span style={{ alignSelf: 'center' }}>Page {currentPage} of {totalPages}</span>
+          <span>Page {currentPage} of {totalPages}</span>
           <button
             className="filter-button"
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
