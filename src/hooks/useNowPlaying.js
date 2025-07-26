@@ -11,7 +11,7 @@ export const useNowPlaying = (callSign) => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const POLL_INTERVAL = 20000;
-  const MAX_HISTORY_ITEMS = 100;
+  const MAX_HISTORY_ITEMS = 10000;
 
   const fetchNowPlaying = useCallback(async () => {
     try {

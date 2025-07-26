@@ -18,6 +18,6 @@ spl_autoload_register(function ($class) {
 
 $callSign = $_GET['call_sign'] ?? '';
 
-// Redirect to the frontend with the call sign
-header("Location: /public/index.html#/$callSign");
+// Redirect to the React app
+header("Location: /#/$callSign");
 exit; 
