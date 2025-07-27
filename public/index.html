@@ -409,6 +409,56 @@
             }
         }
 
+        /* Search styles */
+        .search-container {
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #00d4aa;
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.2), 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .search-input {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border: 1px solid rgba(147, 197, 253, 0.3) !important;
+                color: #1e293b !important;
+                box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1) !important;
+            }
+            
+            .search-input::placeholder {
+                color: #64748b !important;
+            }
+            
+            .search-input:focus {
+                border-color: #1d4ed8 !important;
+                box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1) !important, 0 6px 20px rgba(96, 165, 250, 0.15) !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+            }
+        }
+        
         /* Pagination styles */
         .history-pagination {
             display: flex;
@@ -540,6 +590,7 @@
 
         try {
             let history = loadHistory(callSign);
+            const starredSongs = getStarredSongs();
             
             // Check if this song is different from the last one
             const lastSong = history[0];
@@ -555,11 +606,28 @@
                 spotifyUrl: song.spotifySearchUrl
             });
 
-            // Keep only the last MAX_HISTORY_ITEMS
-            history = history.slice(0, MAX_HISTORY_ITEMS);
+            // Separate starred and non-starred songs
+            const starredItems = [];
+            const regularItems = [];
+            
+            history.forEach(item => {
+                const songKey = `${item.song}:::${item.artist}`;
+                if (starredSongs.includes(songKey)) {
+                    starredItems.push(item);
+                } else {
+                    regularItems.push(item);
+                }
+            });
+            
+            // Keep all starred songs, limit regular songs to MAX_HISTORY_ITEMS
+            const limitedRegularItems = regularItems.slice(0, MAX_HISTORY_ITEMS);
+            
+            // Combine starred and regular items, maintaining chronological order
+            const combinedHistory = [...starredItems, ...limitedRegularItems]
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            localStorage.setItem(getHistoryKey(callSign), JSON.stringify(history));
-            return history;
+            localStorage.setItem(getHistoryKey(callSign), JSON.stringify(combinedHistory));
+            return combinedHistory;
         } catch (e) {
             console.error('Error saving to history:', e);
             return loadHistory(callSign);
@@ -690,11 +758,24 @@
 
     const History = ({ callSign, history, starredSongs, onToggleStar, showingStarredOnly, onToggleFilter }) => {
         const [currentPage, setCurrentPage] = useState(1);
+        const [searchTerm, setSearchTerm] = useState('');
         const ITEMS_PER_PAGE = 10;
 
-        const filteredHistory = showingStarredOnly 
-            ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`, starredSongs))
-            : history;
+        const filteredHistory = useMemo(() => {
+            let filtered = showingStarredOnly 
+                ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`, starredSongs))
+                : history;
+            
+            if (searchTerm.trim()) {
+                const search = searchTerm.toLowerCase().trim();
+                filtered = filtered.filter(item => 
+                    item.song.toLowerCase().includes(search) || 
+                    item.artist.toLowerCase().includes(search)
+                );
+            }
+            
+            return filtered;
+        }, [history, starredSongs, showingStarredOnly, searchTerm]);
 
         const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
         const paginatedHistory = filteredHistory.slice(
@@ -702,10 +783,10 @@
             currentPage * ITEMS_PER_PAGE
         );
 
-        // Reset to page 1 when filter changes
+        // Reset to page 1 when filter or search changes
         React.useEffect(() => {
             setCurrentPage(1);
-        }, [showingStarredOnly, history]);
+        }, [showingStarredOnly, history, searchTerm]);
 
         const formatTime = (timestamp) => {
             const time = new Date(timestamp);
@@ -731,6 +812,15 @@
                     >
                         {showingStarredOnly ? 'Show All' : 'Show Starred Only'}
                     </button>
+                </div>
+                <div className="search-container">
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search songs or artists..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div>
                     {paginatedHistory.map((item, index) => {
