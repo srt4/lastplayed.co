@@ -115,9 +115,9 @@
             margin: 0;
             padding: 0;
             max-width: 100%;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .song-title {
@@ -270,9 +270,9 @@
             font-size: 1.2rem;
             margin: 0;
             color: #00d4aa;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             font-weight: 600;
         }
         
@@ -280,9 +280,9 @@
             font-size: 1rem;
             color: rgba(255, 255, 255, 0.7);
             margin: 0.5rem 0;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             font-weight: 300;
         }
         
@@ -535,6 +535,101 @@
                 max-width: 200px;
             }
         }
+        
+        /* Station metadata styles */
+        .station-info {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-info {
+                background: rgba(255, 255, 255, 0.8) !important;
+                border: 1px solid rgba(147, 197, 253, 0.2) !important;
+            }
+        }
+        
+        .station-name {
+            color: #00d4aa;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-name {
+                color: #1d4ed8 !important;
+            }
+        }
+        
+        .station-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-description {
+                color: #475569 !important;
+            }
+        }
+        
+        .station-details {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-details {
+                color: #64748b !important;
+            }
+        }
+        
+        .station-genre {
+            font-weight: 500;
+        }
+        
+        .station-location {
+            font-weight: 400;
+        }
+        
+        .station-website-link {
+            display: inline-block;
+            color: #00d4aa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid #00d4aa;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-website-link {
+                color: #1d4ed8 !important;
+                border-color: #1d4ed8 !important;
+            }
+        }
+        
+        .station-website-link:hover {
+            background: #00d4aa;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .station-website-link:hover {
+                background: #1d4ed8 !important;
+                color: #fff !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -703,11 +798,12 @@
         const songKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
         const isEmpty = currentSong && (!currentSong.song || !currentSong.artist || 
                         currentSong.song.trim() === '' || currentSong.artist.trim() === '');
+        const station = currentSong?.station;
         
         if (isEmpty) {
             return (
                 <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                    <h4 className="fw-bold mb-4">Now Playing on {callSign.toUpperCase()}</h4>
+                    <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
                     <div className="station-break-container">
                         <div className="station-break-icon">📻</div>
                         <h2 className="station-break-title">Station Break</h2>
@@ -722,16 +818,16 @@
         
         return (
             <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                <h4 className="fw-bold mb-4">Now Playing on {callSign.toUpperCase()}</h4>
+                <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
                 <div className="mb-4">
                     <h5 className="text-uppercase text-secondary">Song</h5>
-                    <h1 className={`song-title mb-2 text-truncate ${!currentSong ? 'placeholder-glow' : ''}`}>
+                    <h1 className={`song-title mb-2 ${!currentSong ? 'placeholder-glow' : ''}`}>
                         {currentSong ? currentSong.song : <span className="placeholder col-10"></span>}
                     </h1>
                 </div>
                 <div className="mb-5">
                     <h5 className="text-uppercase text-secondary">Artist</h5>
-                    <h1 className={`artist-title text-truncate ${!currentSong ? 'placeholder-glow' : ''}`}>
+                    <h1 className={`artist-title ${!currentSong ? 'placeholder-glow' : ''}`}>
                         {currentSong ? currentSong.artist : <span className="placeholder col-8"></span>}
                     </h1>
                 </div>
@@ -748,6 +844,11 @@
                     >
                         ★
                     </button>
+                    {currentSong?.station?.website && (
+                        <a href={currentSong.station.website} target="_blank" rel="noopener noreferrer" className="station-website-link">
+                            Visit Station
+                        </a>
+                    )}
                 </div>
                 <div className="update-indicator" style={{opacity: lastUpdated ? 1 : 0}}>
                     Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
@@ -834,9 +935,9 @@
                                 style={{animationDelay: `${index * 0.05}s`}}
                             >
                                 <div className="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 className="history-title text-truncate w-100">{item.song}</h6>
-                                        <p className="history-artist text-truncate w-100">{item.artist}</p>
+                                    <div style={{minWidth: 0, flex: 1, marginRight: '1rem'}}>
+                                        <h6 className="history-title">{item.song}</h6>
+                                        <p className="history-artist">{item.artist}</p>
                                         <p className="history-time">{formatTime(item.timestamp)}</p>
                                     </div>
                                     <div className="history-actions">

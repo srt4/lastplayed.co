@@ -24,5 +24,35 @@ class KEXP implements model\RadioStation {
     {
         return $this->response->results[0]->artist->name;
     }
+    
+    public function getStationName()
+    {
+        return "KEXP";
+    }
+    
+    public function getStationDescription()
+    {
+        return "Where the Music Matters - Seattle's independent music discovery station";
+    }
+    
+    public function getStationWebsite()
+    {
+        return "https://kexp.org";
+    }
+    
+    public function getStationLogo()
+    {
+        return "/logos/kexp.png";
+    }
+    
+    public function getStationGenre()
+    {
+        return "Alternative, Indie, World Music";
+    }
+    
+    public function getStationLocation()
+    {
+        return "Seattle, WA";
+    }
 
 }

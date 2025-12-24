@@ -31,6 +31,37 @@ abstract class SpinitronStation implements model\RadioStation {
         return $this->artist;
     }
 
-    protected abstract function getCallSign(); 
+    protected abstract function getCallSign();
+    
+    // Default implementations for metadata - can be overridden by subclasses
+    public function getStationName()
+    {
+        return strtoupper($this->getCallSign());
+    }
+    
+    public function getStationDescription()
+    {
+        return "Community radio station " . $this->getStationName();
+    }
+    
+    public function getStationWebsite()
+    {
+        return "https://" . strtolower($this->getCallSign()) . ".org";
+    }
+    
+    public function getStationLogo()
+    {
+        return "/logos/" . strtolower($this->getCallSign()) . ".png";
+    }
+    
+    public function getStationGenre()
+    {
+        return "Variety";
+    }
+    
+    public function getStationLocation()
+    {
+        return "Unknown Location";
+    }
 
 }

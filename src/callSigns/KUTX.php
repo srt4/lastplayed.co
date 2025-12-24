@@ -33,5 +33,35 @@ class KUTX implements model\RadioStation {
     {
         return $this->response->onNow->song->artistName;
     }
+    
+    public function getStationName()
+    {
+        return "KUTX 98.9";
+    }
+    
+    public function getStationDescription()
+    {
+        return "Austin's Music Discovery - The University of Texas at Austin Radio";
+    }
+    
+    public function getStationWebsite()
+    {
+        return "https://kutx.org";
+    }
+    
+    public function getStationLogo()
+    {
+        return "/logos/kutx.png";
+    }
+    
+    public function getStationGenre()
+    {
+        return "Eclectic, Indie, Local Music";
+    }
+    
+    public function getStationLocation()
+    {
+        return "Austin, TX";
+    }
 
 }

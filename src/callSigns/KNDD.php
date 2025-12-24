@@ -35,5 +35,35 @@ class KNDD implements model\RadioStation {
         // Get the first (most recent) performance from the list
         return $this->response->performances[0]->artist;
     }
+    
+    public function getStationName()
+    {
+        return "107.7 The End";
+    }
+    
+    public function getStationDescription()
+    {
+        return "Seattle's Alternative Rock Station";
+    }
+    
+    public function getStationWebsite()
+    {
+        return "https://1077theend.iheart.com";
+    }
+    
+    public function getStationLogo()
+    {
+        return "/logos/kndd.png";
+    }
+    
+    public function getStationGenre()
+    {
+        return "Alternative Rock";
+    }
+    
+    public function getStationLocation()
+    {
+        return "Seattle, WA";
+    }
 
 }

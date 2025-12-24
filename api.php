@@ -37,6 +37,14 @@ try {
         'song' => $song,
         'artist' => $artist,
         'spotifySearchUrl' => 'https://play.spotify.com/search/' . urlencode("$artist $song"),
+        'station' => [
+            'name' => $station->getStationName(),
+            'description' => $station->getStationDescription(),
+            'website' => $station->getStationWebsite(),
+            'logo' => $station->getStationLogo(),
+            'genre' => $station->getStationGenre(),
+            'location' => $station->getStationLocation(),
+        ]
     ]);
 } catch (Exception $e) {
     http_response_code(500);
