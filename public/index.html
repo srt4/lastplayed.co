@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,65 +19,81 @@
             margin: 0;
             min-height: 100vh;
         }
-        
+
         @media (prefers-color-scheme: light) {
             body {
                 background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 50%, #60a5fa 100%);
                 color: #1e293b;
             }
-            .now-playing-card, .history-card {
+
+            .now-playing-card,
+            .history-card {
                 background: rgba(255, 255, 255, 0.95) !important;
                 border: 1px solid rgba(147, 197, 253, 0.3) !important;
                 box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15) !important;
             }
+
             .song-title {
                 color: #1d4ed8 !important;
             }
+
             .history-title {
                 color: #1d4ed8 !important;
             }
+
             .artist-title {
                 color: #475569 !important;
             }
+
             .history-artist {
                 color: #64748b !important;
             }
+
             .history-time {
                 color: #94a3b8 !important;
             }
+
             .star-button {
                 color: #64748b !important;
             }
+
             .star-button:hover {
                 color: #fbbf24 !important;
             }
+
             .star-button.starred {
                 color: #fbbf24 !important;
             }
         }
-        
+
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
                 color: #e0e0e0;
             }
-            .card, .now-playing-card, .history-card {
+
+            .card,
+            .now-playing-card,
+            .history-card {
                 background: rgba(255, 255, 255, 0.02) !important;
                 backdrop-filter: blur(20px) !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
             }
+
             .history-artist {
                 color: #bbb;
             }
+
             .history-time {
                 color: #888;
             }
+
             .star-button {
                 color: #888;
             }
         }
-        
+
         .now-playing-card {
             border-radius: 24px;
             padding: 3rem;
@@ -93,12 +110,12 @@
             animation: fadeIn 0.8s ease-out 0.2s forwards;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .now-playing-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
-        
+
         .now-playing-card::before {
             content: '';
             position: absolute;
@@ -108,8 +125,9 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
         }
-        
-        .song-title, .artist-title {
+
+        .song-title,
+        .artist-title {
             font-weight: 700;
             line-height: 1.2;
             margin: 0;
@@ -119,14 +137,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .song-title {
             font-size: 2.2rem;
             color: #00d4aa;
             margin-bottom: 0.5rem;
             transition: color 0.3s ease;
         }
-        
+
         .artist-title {
             font-size: 1.6rem;
             color: rgba(255, 255, 255, 0.8);
@@ -134,57 +152,67 @@
             letter-spacing: 0.5px;
             transition: color 0.3s ease;
         }
-        
+
         @media (max-width: 768px) {
             .now-playing-card {
                 padding: 2rem;
                 margin-top: 2vh;
                 margin-bottom: 2vh;
             }
+
             .song-title {
                 font-size: 1.8rem;
             }
+
             .artist-title {
                 font-size: 1.4rem;
             }
+
             .history-card {
                 padding: 1rem;
             }
         }
-        
+
         @media (max-width: 576px) {
             body {
                 padding: 0.5rem;
             }
+
             .now-playing-card {
                 padding: 1.5rem;
                 border-radius: 20px;
             }
+
             .song-title {
                 font-size: 1.5rem;
             }
+
             .artist-title {
                 font-size: 1.2rem;
             }
+
             .spotify-link img {
                 width: 60px;
             }
+
             .history-card {
                 padding: 1rem;
                 border-radius: 16px;
             }
+
             .history-title {
                 font-size: 1.1rem;
             }
+
             .history-artist {
                 font-size: 0.9rem;
             }
         }
-        
+
         .spotify-link {
             display: inline-block;
         }
-        
+
         .spotify-link img {
             width: 75px;
             height: auto;
@@ -192,32 +220,32 @@
             border-radius: 16px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         }
-        
+
         .spotify-link img:hover {
             transform: scale(1.05) rotate(2deg);
             filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
         }
-        
+
         .placeholder-glow .placeholder {
             border-radius: 10px;
         }
-        
+
         #error-container {
             display: none;
         }
-        
+
         .update-indicator {
             transition: opacity 0.3s ease;
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.6);
         }
-        
+
         @media (prefers-color-scheme: light) {
             .update-indicator {
                 color: rgba(30, 41, 59, 0.6) !important;
             }
         }
-        
+
         .offline-indicator {
             display: none;
             background-color: #ff9800;
@@ -226,11 +254,11 @@
             border-radius: 4px;
             margin-bottom: 1rem;
         }
-        
+
         .offline-indicator.visible {
             display: block;
         }
-        
+
         /* History styles */
         .history-section {
             opacity: 0;
@@ -238,12 +266,12 @@
             transition: all 0.5s ease;
             max-width: 100%;
         }
-        
+
         .history-section.visible {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .history-card {
             transition: all 0.3s ease;
             border-radius: 20px;
@@ -259,13 +287,13 @@
             opacity: 0;
             animation: fadeInUp 0.5s ease-out forwards;
         }
-        
-        
+
+
         .history-card:hover {
             transform: translateY(-3px) scale(1.01);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
-        
+
         .history-title {
             font-size: 1.2rem;
             margin: 0;
@@ -275,7 +303,7 @@
             text-overflow: ellipsis;
             font-weight: 600;
         }
-        
+
         .history-artist {
             font-size: 1rem;
             color: rgba(255, 255, 255, 0.7);
@@ -285,25 +313,25 @@
             text-overflow: ellipsis;
             font-weight: 300;
         }
-        
+
         .history-time {
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.5);
             margin: 0;
             font-weight: 400;
         }
-        
+
         .history-spotify {
             width: 30px;
             opacity: 0.7;
             transition: opacity 0.2s ease;
             cursor: pointer;
         }
-        
+
         .history-card:hover .history-spotify {
             opacity: 1;
         }
-        
+
         .history-card a {
             display: inline-block;
             text-decoration: none;
@@ -330,53 +358,68 @@
             color: #ffd700;
             animation: starGlow 2s ease-in-out infinite alternate;
         }
-        
+
         @keyframes starGlow {
-            from { text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
-            to { text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            }
+
+            to {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            }
         }
-        
+
         .station-break-container {
             padding: 3rem 2rem;
             text-align: center;
         }
-        
+
         .station-break-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
             animation: radioWave 3s ease-in-out infinite;
         }
-        
+
         .station-break-title {
             font-size: 2.5rem;
             color: #00d4aa;
             margin-bottom: 1rem;
             font-weight: 600;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-break-title {
                 color: #1d4ed8 !important;
             }
         }
-        
+
         .station-break-text {
             font-size: 1.2rem;
             color: rgba(255, 255, 255, 0.8);
             margin: 0;
             font-style: italic;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-break-text {
                 color: #475569 !important;
             }
         }
-        
+
         @keyframes radioWave {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.05) rotate(-5deg); }
-            75% { transform: scale(0.95) rotate(5deg); }
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale(1.05) rotate(-5deg);
+            }
+
+            75% {
+                transform: scale(0.95) rotate(5deg);
+            }
         }
 
         .now-playing-actions {
@@ -392,20 +435,26 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
+            from {
+                opacity: 0;
             }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -414,7 +463,7 @@
             margin-bottom: 1.5rem;
             width: 100%;
         }
-        
+
         .search-input {
             width: 100%;
             padding: 1rem 1.5rem;
@@ -428,18 +477,18 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
+
         .search-input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
-        
+
         .search-input:focus {
             outline: none;
             border-color: #00d4aa;
             box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.2), 0 6px 20px rgba(0, 0, 0, 0.15);
             background: rgba(255, 255, 255, 0.15);
         }
-        
+
         @media (prefers-color-scheme: light) {
             .search-input {
                 background: rgba(255, 255, 255, 0.9) !important;
@@ -447,18 +496,18 @@
                 color: #1e293b !important;
                 box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1) !important;
             }
-            
+
             .search-input::placeholder {
                 color: #64748b !important;
             }
-            
+
             .search-input:focus {
                 border-color: #1d4ed8 !important;
                 box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1) !important, 0 6px 20px rgba(96, 165, 250, 0.15) !important;
                 background: rgba(255, 255, 255, 0.95) !important;
             }
         }
-        
+
         /* Pagination styles */
         .history-pagination {
             display: flex;
@@ -529,13 +578,13 @@
                 flex-direction: column;
                 gap: 0.75rem;
             }
-            
+
             .history-pagination button {
                 width: 100%;
                 max-width: 200px;
             }
         }
-        
+
         /* Station metadata styles */
         .station-info {
             padding: 1.5rem;
@@ -545,60 +594,60 @@
             backdrop-filter: blur(10px);
             margin-bottom: 2rem;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-info {
                 background: rgba(255, 255, 255, 0.8) !important;
                 border: 1px solid rgba(147, 197, 253, 0.2) !important;
             }
         }
-        
+
         .station-name {
             color: #00d4aa;
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
             font-weight: 700;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-name {
                 color: #1d4ed8 !important;
             }
         }
-        
+
         .station-description {
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
             margin-bottom: 0.5rem;
             font-style: italic;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-description {
                 color: #475569 !important;
             }
         }
-        
+
         .station-details {
             color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-details {
                 color: #64748b !important;
             }
         }
-        
+
         .station-genre {
             font-weight: 500;
         }
-        
+
         .station-location {
             font-weight: 400;
         }
-        
+
         .station-website-link {
             display: inline-block;
             color: #00d4aa;
@@ -610,20 +659,20 @@
             border-radius: 8px;
             transition: all 0.2s ease;
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-website-link {
                 color: #1d4ed8 !important;
                 border-color: #1d4ed8 !important;
             }
         }
-        
+
         .station-website-link:hover {
             background: #00d4aa;
             color: #fff;
             transform: translateY(-1px);
         }
-        
+
         @media (prefers-color-scheme: light) {
             .station-website-link:hover {
                 background: #1d4ed8 !important;
@@ -632,327 +681,328 @@
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
-<script type="text/babel">
-    const { useState, useEffect, useCallback, useMemo } = React;
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
 
-    // Service Worker Registration (same as before)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
+        // Service Worker Registration (same as before)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                    }
+
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+                    await navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime());
+                    console.log('ServiceWorker registration successful');
+                } catch (err) {
+                    console.error('ServiceWorker registration failed:', err);
+                }
+            });
+        }
+
+        // Constants - EXACT same as vanilla JS to maintain localStorage compatibility
+        const POLL_INTERVAL = 20000;
+        const CACHE_KEY_PREFIX = 'nowplaying_';
+        const HISTORY_KEY_PREFIX = 'history_';
+        const STARRED_KEY = 'starred_songs';
+        const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
+        const MAX_HISTORY_ITEMS = 100;
+
+        // Utility functions - EXACT same logic as vanilla JS
+        const getHistoryKey = (callSign) => `${HISTORY_KEY_PREFIX}${callSign}`;
+        const getCacheKey = (callSign) => `${CACHE_KEY_PREFIX}${callSign}`;
+
+        const loadHistory = (callSign) => {
             try {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (let registration of registrations) {
-                    await registration.unregister();
+                const history = JSON.parse(localStorage.getItem(getHistoryKey(callSign)) || '[]');
+                return history;
+            } catch (e) {
+                console.error('Error loading history:', e);
+                return [];
+            }
+        };
+
+        const saveToHistory = (callSign, song) => {
+            if (!song || !song.song || !song.artist) return;
+
+            try {
+                let history = loadHistory(callSign);
+                const starredSongs = getStarredSongs();
+
+                // Check if this song is different from the last one
+                const lastSong = history[0];
+                if (lastSong && lastSong.song === song.song && lastSong.artist === song.artist) {
+                    return;
                 }
-                
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-                
-                await navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime());
-                console.log('ServiceWorker registration successful');
-            } catch (err) {
-                console.error('ServiceWorker registration failed:', err);
+
+                // Add new song to the beginning
+                history.unshift({
+                    song: song.song,
+                    artist: song.artist,
+                    timestamp: new Date().toISOString(),
+                    spotifyUrl: song.spotifySearchUrl
+                });
+
+                // Separate starred and non-starred songs
+                const starredItems = [];
+                const regularItems = [];
+
+                history.forEach(item => {
+                    const songKey = `${item.song}:::${item.artist}`;
+                    if (starredSongs.includes(songKey)) {
+                        starredItems.push(item);
+                    } else {
+                        regularItems.push(item);
+                    }
+                });
+
+                // Keep all starred songs, limit regular songs to MAX_HISTORY_ITEMS
+                const limitedRegularItems = regularItems.slice(0, MAX_HISTORY_ITEMS);
+
+                // Combine starred and regular items, maintaining chronological order
+                const combinedHistory = [...starredItems, ...limitedRegularItems]
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                localStorage.setItem(getHistoryKey(callSign), JSON.stringify(combinedHistory));
+                return combinedHistory;
+            } catch (e) {
+                console.error('Error saving to history:', e);
+                return loadHistory(callSign);
             }
-        });
-    }
+        };
 
-    // Constants - EXACT same as vanilla JS to maintain localStorage compatibility
-    const POLL_INTERVAL = 20000;
-    const CACHE_KEY_PREFIX = 'nowplaying_';
-    const HISTORY_KEY_PREFIX = 'history_';
-    const STARRED_KEY = 'starred_songs';
-    const SHOW_STARRED_PREF_KEY = 'show_starred_preference';
-    const MAX_HISTORY_ITEMS = 100;
-
-    // Utility functions - EXACT same logic as vanilla JS
-    const getHistoryKey = (callSign) => `${HISTORY_KEY_PREFIX}${callSign}`;
-    const getCacheKey = (callSign) => `${CACHE_KEY_PREFIX}${callSign}`;
-
-    const loadHistory = (callSign) => {
-        try {
-            const history = JSON.parse(localStorage.getItem(getHistoryKey(callSign)) || '[]');
-            return history;
-        } catch (e) {
-            console.error('Error loading history:', e);
-            return [];
-        }
-    };
-
-    const saveToHistory = (callSign, song) => {
-        if (!song || !song.song || !song.artist) return;
-
-        try {
-            let history = loadHistory(callSign);
-            const starredSongs = getStarredSongs();
-            
-            // Check if this song is different from the last one
-            const lastSong = history[0];
-            if (lastSong && lastSong.song === song.song && lastSong.artist === song.artist) {
-                return;
+        const getStarredSongs = () => {
+            try {
+                return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
+            } catch (e) {
+                console.error('Error loading starred songs:', e);
+                return [];
             }
+        };
 
-            // Add new song to the beginning
-            history.unshift({
-                song: song.song,
-                artist: song.artist,
-                timestamp: new Date().toISOString(),
-                spotifyUrl: song.spotifySearchUrl
-            });
+        const toggleStarSong = (songKey) => {
+            try {
+                const starredSongs = getStarredSongs();
+                const index = starredSongs.indexOf(songKey);
 
-            // Separate starred and non-starred songs
-            const starredItems = [];
-            const regularItems = [];
-            
-            history.forEach(item => {
-                const songKey = `${item.song}:::${item.artist}`;
-                if (starredSongs.includes(songKey)) {
-                    starredItems.push(item);
+                let newStarredSongs;
+                if (index === -1) {
+                    newStarredSongs = [...starredSongs, songKey];
                 } else {
-                    regularItems.push(item);
+                    newStarredSongs = starredSongs.filter(key => key !== songKey);
                 }
-            });
-            
-            // Keep all starred songs, limit regular songs to MAX_HISTORY_ITEMS
-            const limitedRegularItems = regularItems.slice(0, MAX_HISTORY_ITEMS);
-            
-            // Combine starred and regular items, maintaining chronological order
-            const combinedHistory = [...starredItems, ...limitedRegularItems]
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            localStorage.setItem(getHistoryKey(callSign), JSON.stringify(combinedHistory));
-            return combinedHistory;
-        } catch (e) {
-            console.error('Error saving to history:', e);
-            return loadHistory(callSign);
-        }
-    };
-
-    const getStarredSongs = () => {
-        try {
-            return JSON.parse(localStorage.getItem(STARRED_KEY) || '[]');
-        } catch (e) {
-            console.error('Error loading starred songs:', e);
-            return [];
-        }
-    };
-
-    const toggleStarSong = (songKey) => {
-        try {
-            const starredSongs = getStarredSongs();
-            const index = starredSongs.indexOf(songKey);
-            
-            let newStarredSongs;
-            if (index === -1) {
-                newStarredSongs = [...starredSongs, songKey];
-            } else {
-                newStarredSongs = starredSongs.filter(key => key !== songKey);
+                localStorage.setItem(STARRED_KEY, JSON.stringify(newStarredSongs));
+                return newStarredSongs;
+            } catch (e) {
+                console.error('Error toggling star:', e);
+                return getStarredSongs();
             }
-            
-            localStorage.setItem(STARRED_KEY, JSON.stringify(newStarredSongs));
-            return newStarredSongs;
-        } catch (e) {
-            console.error('Error toggling star:', e);
-            return getStarredSongs();
-        }
-    };
+        };
 
-    const isSongStarred = (songKey, starredSongs) => {
-        return starredSongs.includes(songKey);
-    };
+        const isSongStarred = (songKey, starredSongs) => {
+            return starredSongs.includes(songKey);
+        };
 
-    // React Components
-    const StationList = () => (
-        <div className="container d-flex justify-content-center flex-column align-items-center">
-            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                <h3>Choose a Radio Station:</h3>
-                <div className="list-group mt-3">
-                    <a href="https://kexp.lastplayed.co" className="list-group-item list-group-item-action">KEXP - Seattle</a>
-                    <a href="https://kxly.lastplayed.co" className="list-group-item list-group-item-action">KXLY - Spokane</a>
-                    <a href="https://kbcs.lastplayed.co" className="list-group-item list-group-item-action">KBCS - Bellevue</a>
-                    <a href="https://kbfg.lastplayed.co" className="list-group-item list-group-item-action">KBFG - Seattle</a>
-                    <a href="https://kmgp.lastplayed.co" className="list-group-item list-group-item-action">KMGP - Seattle</a>
-                    <a href="https://kndd.lastplayed.co" className="list-group-item list-group-item-action">KNDD - Seattle</a>
-                    <a href="https://kpnw.lastplayed.co" className="list-group-item list-group-item-action">KPNW - Seattle</a>
-                    <a href="https://kutx.lastplayed.co" className="list-group-item list-group-item-action">KUTX - Austin</a>
-                    <a href="https://kxsu.lastplayed.co" className="list-group-item list-group-item-action">KXSU - Seattle</a>
-                    <a href="https://kzok.lastplayed.co" className="list-group-item list-group-item-action">KZOK - Seattle</a>
-                    <a href="https://ckkq.lastplayed.co" className="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
+        // React Components
+        const StationList = () => (
+            <div className="container d-flex justify-content-center flex-column align-items-center">
+                <div className="now-playing-card text-center w-100" style={{ maxWidth: '700px' }}>
+                    <h3>Choose a Radio Station:</h3>
+                    <div className="list-group mt-3">
+                        <a href="https://kexp.currently.rocks" className="list-group-item list-group-item-action">KEXP - Seattle</a>
+                        <a href="https://kxly.currently.rocks" className="list-group-item list-group-item-action">KXLY - Spokane</a>
+                        <a href="https://kbcs.currently.rocks" className="list-group-item list-group-item-action">KBCS - Bellevue</a>
+                        <a href="https://kbfg.currently.rocks" className="list-group-item list-group-item-action">KBFG - Seattle</a>
+                        <a href="https://kmgp.currently.rocks" className="list-group-item list-group-item-action">KMGP - Seattle</a>
+                        <a href="https://kndd.currently.rocks" className="list-group-item list-group-item-action">KNDD - Seattle</a>
+                        <a href="https://kpnw.currently.rocks" className="list-group-item list-group-item-action">KPNW - Seattle</a>
+                        <a href="https://kutx.currently.rocks" className="list-group-item list-group-item-action">KUTX - Austin</a>
+                        <a href="https://kxsu.currently.rocks" className="list-group-item list-group-item-action">KXSU - Seattle</a>
+                        <a href="https://kzok.currently.rocks" className="list-group-item list-group-item-action">KZOK - Seattle</a>
+                        <a href="https://ckkq.currently.rocks" className="list-group-item list-group-item-action">CKKQ - Port Alberni</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
 
-    const ErrorDisplay = ({ message }) => (
-        <div className="container d-flex justify-content-center flex-column align-items-center">
-            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                <h1 className="display-4 text-danger">Error</h1>
-                <p className="lead">{message}</p>
-                <a href="/" className="btn btn-primary mt-3">Try Again</a>
+        const ErrorDisplay = ({ message }) => (
+            <div className="container d-flex justify-content-center flex-column align-items-center">
+                <div className="now-playing-card text-center w-100" style={{ maxWidth: '700px' }}>
+                    <h1 className="display-4 text-danger">Error</h1>
+                    <p className="lead">{message}</p>
+                    <a href="/" className="btn btn-primary mt-3">Try Again</a>
+                </div>
             </div>
-        </div>
-    );
+        );
 
-    const NowPlaying = ({ callSign, currentSong, lastUpdated, isStarred, onToggleStar }) => {
-        const songKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
-        const isEmpty = currentSong && (!currentSong.song || !currentSong.artist || 
-                        currentSong.song.trim() === '' || currentSong.artist.trim() === '');
-        const station = currentSong?.station;
-        
-        if (isEmpty) {
-            return (
-                <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                    <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
-                    <div className="station-break-container">
-                        <div className="station-break-icon">📻</div>
-                        <h2 className="station-break-title">Station Break</h2>
-                        <p className="station-break-text">We'll be right back with more music!</p>
+        const NowPlaying = ({ callSign, currentSong, lastUpdated, isStarred, onToggleStar }) => {
+            const songKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
+            const isEmpty = currentSong && (!currentSong.song || !currentSong.artist ||
+                currentSong.song.trim() === '' || currentSong.artist.trim() === '');
+            const station = currentSong?.station;
+
+            if (isEmpty) {
+                return (
+                    <div className="now-playing-card text-center w-100" style={{ maxWidth: '700px' }}>
+                        <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
+                        <div className="station-break-container">
+                            <div className="station-break-icon">📻</div>
+                            <h2 className="station-break-title">Station Break</h2>
+                            <p className="station-break-text">We'll be right back with more music!</p>
+                        </div>
+                        <div className="update-indicator" style={{ opacity: lastUpdated ? 1 : 0 }}>
+                            Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+                        </div>
                     </div>
-                    <div className="update-indicator" style={{opacity: lastUpdated ? 1 : 0}}>
+                );
+            }
+
+            return (
+                <div className="now-playing-card text-center w-100" style={{ maxWidth: '700px' }}>
+                    <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
+                    <div className="mb-4">
+                        <h5 className="text-uppercase text-secondary">Song</h5>
+                        <h1 className={`song-title mb-2 ${!currentSong ? 'placeholder-glow' : ''}`}>
+                            {currentSong ? currentSong.song : <span className="placeholder col-10"></span>}
+                        </h1>
+                    </div>
+                    <div className="mb-5">
+                        <h5 className="text-uppercase text-secondary">Artist</h5>
+                        <h1 className={`artist-title ${!currentSong ? 'placeholder-glow' : ''}`}>
+                            {currentSong ? currentSong.artist : <span className="placeholder col-8"></span>}
+                        </h1>
+                    </div>
+                    <div className="now-playing-actions">
+                        <div className="spotify-link">
+                            <a href={currentSong?.spotifySearchUrl || "#"} target="_blank" rel="noopener noreferrer">
+                                <img src="/thirdParty/spotify.svg" alt="Open in Spotify" />
+                            </a>
+                        </div>
+                        <button
+                            className={`star-button ${isStarred ? 'starred' : ''}`}
+                            style={{ fontSize: '2rem' }}
+                            onClick={() => currentSong && onToggleStar(songKey)}
+                        >
+                            ★
+                        </button>
+                        {currentSong?.station?.website && (
+                            <a href={currentSong.station.website} target="_blank" rel="noopener noreferrer" className="station-website-link">
+                                Visit Station
+                            </a>
+                        )}
+                    </div>
+                    <div className="update-indicator" style={{ opacity: lastUpdated ? 1 : 0 }}>
                         Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
                     </div>
                 </div>
             );
-        }
-        
-        return (
-            <div className="now-playing-card text-center w-100" style={{maxWidth: '700px'}}>
-                <h4 className="fw-bold mb-4">Now Playing on {station?.name || callSign.toUpperCase()}</h4>
-                <div className="mb-4">
-                    <h5 className="text-uppercase text-secondary">Song</h5>
-                    <h1 className={`song-title mb-2 ${!currentSong ? 'placeholder-glow' : ''}`}>
-                        {currentSong ? currentSong.song : <span className="placeholder col-10"></span>}
-                    </h1>
-                </div>
-                <div className="mb-5">
-                    <h5 className="text-uppercase text-secondary">Artist</h5>
-                    <h1 className={`artist-title ${!currentSong ? 'placeholder-glow' : ''}`}>
-                        {currentSong ? currentSong.artist : <span className="placeholder col-8"></span>}
-                    </h1>
-                </div>
-                <div className="now-playing-actions">
-                    <div className="spotify-link">
-                        <a href={currentSong?.spotifySearchUrl || "#"} target="_blank" rel="noopener noreferrer">
-                            <img src="/thirdParty/spotify.svg" alt="Open in Spotify" />
-                        </a>
-                    </div>
-                    <button 
-                        className={`star-button ${isStarred ? 'starred' : ''}`}
-                        style={{fontSize: '2rem'}}
-                        onClick={() => currentSong && onToggleStar(songKey)}
-                    >
-                        ★
-                    </button>
-                    {currentSong?.station?.website && (
-                        <a href={currentSong.station.website} target="_blank" rel="noopener noreferrer" className="station-website-link">
-                            Visit Station
-                        </a>
-                    )}
-                </div>
-                <div className="update-indicator" style={{opacity: lastUpdated ? 1 : 0}}>
-                    Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
-                </div>
-            </div>
-        );
-    };
-
-    const History = ({ callSign, history, starredSongs, onToggleStar, showingStarredOnly, onToggleFilter }) => {
-        const [currentPage, setCurrentPage] = useState(1);
-        const [searchTerm, setSearchTerm] = useState('');
-        const ITEMS_PER_PAGE = 10;
-
-        const filteredHistory = useMemo(() => {
-            let filtered = showingStarredOnly 
-                ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`, starredSongs))
-                : history;
-            
-            if (searchTerm.trim()) {
-                const search = searchTerm.toLowerCase().trim();
-                filtered = filtered.filter(item => 
-                    item.song.toLowerCase().includes(search) || 
-                    item.artist.toLowerCase().includes(search)
-                );
-            }
-            
-            return filtered;
-        }, [history, starredSongs, showingStarredOnly, searchTerm]);
-
-        const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
-        const paginatedHistory = filteredHistory.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            currentPage * ITEMS_PER_PAGE
-        );
-
-        // Reset to page 1 when filter or search changes
-        React.useEffect(() => {
-            setCurrentPage(1);
-        }, [showingStarredOnly, history, searchTerm]);
-
-        const formatTime = (timestamp) => {
-            const time = new Date(timestamp);
-            const now = new Date();
-            
-            if (time.toDateString() === now.toDateString()) {
-                return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            } else {
-                return time.toLocaleDateString([], { month: 'short', day: 'numeric' }) + 
-                       ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
         };
 
-        if (history.length === 0) return null;
+        const History = ({ callSign, history, starredSongs, onToggleStar, showingStarredOnly, onToggleFilter }) => {
+            const [currentPage, setCurrentPage] = useState(1);
+            const [searchTerm, setSearchTerm] = useState('');
+            const ITEMS_PER_PAGE = 10;
 
-        return (
-            <div className="history-section w-100 visible" style={{maxWidth: '700px'}}>
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h5 className="text-center mb-0">Previously Played</h5>
-                    <button 
-                        className="btn btn-sm btn-warning"
-                        onClick={onToggleFilter}
-                    >
-                        {showingStarredOnly ? 'Show All' : 'Show Starred Only'}
-                    </button>
-                </div>
-                <div className="search-container">
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search songs or artists..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div>
-                    {paginatedHistory.map((item, index) => {
-                        const songKey = `${item.song}:::${item.artist}`;
-                        const isStarred = isSongStarred(songKey, starredSongs);
-                        
-                        return (
-                            <div 
-                                key={`${songKey}-${item.timestamp}`}
-                                className="history-card"
-                                style={{animationDelay: `${index * 0.05}s`}}
-                            >
-                                <div className="d-flex justify-content-between align-items-start">
-                                    <div style={{minWidth: 0, flex: 1, marginRight: '1rem'}}>
-                                        <h6 className="history-title">{item.song}</h6>
-                                        <p className="history-artist">{item.artist}</p>
-                                        <p className="history-time">{formatTime(item.timestamp)}</p>
-                                    </div>
-                                    <div className="history-actions">
-                                        <button 
-                                            className={`star-button ${isStarred ? 'starred' : ''}`}
-                                            onClick={() => onToggleStar(songKey)}
-                                        >
-                                            ★
-                                        </button>
-                                        <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
-                                            <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
-                                        </a>
+            const filteredHistory = useMemo(() => {
+                let filtered = showingStarredOnly
+                    ? history.filter(item => isSongStarred(`${item.song}:::${item.artist}`, starredSongs))
+                    : history;
+
+                if (searchTerm.trim()) {
+                    const search = searchTerm.toLowerCase().trim();
+                    filtered = filtered.filter(item =>
+                        item.song.toLowerCase().includes(search) ||
+                        item.artist.toLowerCase().includes(search)
+                    );
+                }
+
+                return filtered;
+            }, [history, starredSongs, showingStarredOnly, searchTerm]);
+
+            const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
+            const paginatedHistory = filteredHistory.slice(
+                (currentPage - 1) * ITEMS_PER_PAGE,
+                currentPage * ITEMS_PER_PAGE
+            );
+
+            // Reset to page 1 when filter or search changes
+            React.useEffect(() => {
+                setCurrentPage(1);
+            }, [showingStarredOnly, history, searchTerm]);
+
+            const formatTime = (timestamp) => {
+                const time = new Date(timestamp);
+                const now = new Date();
+
+                if (time.toDateString() === now.toDateString()) {
+                    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    return time.toLocaleDateString([], { month: 'short', day: 'numeric' }) +
+                        ' ' + time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            };
+
+            if (history.length === 0) return null;
+
+            return (
+                <div className="history-section w-100 visible" style={{ maxWidth: '700px' }}>
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h5 className="text-center mb-0">Previously Played</h5>
+                        <button
+                            className="btn btn-sm btn-warning"
+                            onClick={onToggleFilter}
+                        >
+                            {showingStarredOnly ? 'Show All' : 'Show Starred Only'}
+                        </button>
+                    </div>
+                    <div className="search-container">
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search songs or artists..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        {paginatedHistory.map((item, index) => {
+                            const songKey = `${item.song}:::${item.artist}`;
+                            const isStarred = isSongStarred(songKey, starredSongs);
+
+                            return (
+                                <div
+                                    key={`${songKey}-${item.timestamp}`}
+                                    className="history-card"
+                                    style={{ animationDelay: `${index * 0.05}s` }}
+                                >
+                                    <div className="d-flex justify-content-between align-items-start">
+                                        <div style={{ minWidth: 0, flex: 1, marginRight: '1rem' }}>
+                                            <h6 className="history-title">{item.song}</h6>
+                                            <p className="history-artist">{item.artist}</p>
+                                            <p className="history-time">{formatTime(item.timestamp)}</p>
+                                        </div>
+                                        <div className="history-actions">
+                                            <button
+                                                className={`star-button ${isStarred ? 'starred' : ''}`}
+                                                onClick={() => onToggleStar(songKey)}
+                                            >
+                                                ★
+                                            </button>
+                                            <a href={item.spotifyUrl} target="_blank" rel="noopener noreferrer">
+                                                <img src="/thirdParty/spotify.svg" className="history-spotify" alt="Open in Spotify" />
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             );
                         })}
                     </div>
@@ -975,174 +1025,175 @@
                             </button>
                         </div>
                     )}
-            </div>
-        );
-    };
-
-    // Main App Component
-    const App = () => {
-        const [callSign, setCallSign] = useState('');
-        const [currentSong, setCurrentSong] = useState(null);
-        const [history, setHistory] = useState([]);
-        const [starredSongs, setStarredSongs] = useState([]);
-        const [lastUpdated, setLastUpdated] = useState(null);
-        const [error, setError] = useState(null);
-        const [isOffline, setIsOffline] = useState(!navigator.onLine);
-        const [showingStarredOnly, setShowingStarredOnly] = useState(false);
-
-        // Get call sign from subdomain
-        useEffect(() => {
-            const hostname = window.location.hostname;
-            const cs = hostname.split('.')[0];
-            setCallSign(cs);
-            
-            if (cs && cs !== 'www' && cs !== 'currently') {
-                document.title = `Now Playing on ${cs.toUpperCase()}`;
-                // Load initial data from localStorage using EXACT same keys
-                setHistory(loadHistory(cs));
-                setStarredSongs(getStarredSongs());
-                const showStarred = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
-                setShowingStarredOnly(showStarred);
-            } else {
-                document.title = "Choose a Radio Station";
-            }
-        }, []);
-
-        // Fetch now playing data
-        const fetchNowPlaying = useCallback(async () => {
-            if (!callSign || callSign === 'www' || callSign === 'currently') return;
-
-            try {
-                const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || `HTTP error! status: ${response.status}`);
-                }
-
-                // Cache the successful response using EXACT same key
-                const cacheKey = getCacheKey(callSign);
-                const cacheData = { data, timestamp: new Date().toISOString() };
-                localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-
-                // Only update if the song has changed
-                if (!currentSong || currentSong.song !== data.song || currentSong.artist !== data.artist) {
-                    setCurrentSong(data);
-                    // Save to history using EXACT same logic
-                    const newHistory = saveToHistory(callSign, data);
-                    if (newHistory) setHistory(newHistory);
-                }
-
-                setLastUpdated(new Date());
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching now playing:', err);
-                if (isOffline) {
-                    loadFromCache();
-                } else {
-                    setError(err.message);
-                }
-            }
-        }, [callSign, currentSong, isOffline]);
-
-        const loadFromCache = useCallback(() => {
-            try {
-                const cacheKey = getCacheKey(callSign);
-                const cached = localStorage.getItem(cacheKey);
-                
-                if (cached) {
-                    const { data, timestamp } = JSON.parse(cached);
-                    setCurrentSong(data);
-                    setLastUpdated(new Date(timestamp));
-                }
-            } catch (error) {
-                console.error('Error loading from cache:', error);
-                setError('Could not load cached data');
-            }
-        }, [callSign]);
-
-        // Handle online/offline status
-        useEffect(() => {
-            const handleOnlineStatus = () => {
-                setIsOffline(!navigator.onLine);
-                if (!navigator.onLine) {
-                    loadFromCache();
-                } else {
-                    fetchNowPlaying();
-                }
-            };
-
-            window.addEventListener('online', handleOnlineStatus);
-            window.addEventListener('offline', handleOnlineStatus);
-            
-            return () => {
-                window.removeEventListener('online', handleOnlineStatus);
-                window.removeEventListener('offline', handleOnlineStatus);
-            };
-        }, [fetchNowPlaying, loadFromCache]);
-
-        // Polling
-        useEffect(() => {
-            if (callSign && callSign !== 'www' && callSign !== 'currently') {
-                fetchNowPlaying();
-                const interval = setInterval(fetchNowPlaying, POLL_INTERVAL);
-                return () => clearInterval(interval);
-            }
-        }, [fetchNowPlaying, callSign]);
-
-        const handleToggleStar = useCallback((songKey) => {
-            const newStarredSongs = toggleStarSong(songKey);
-            setStarredSongs(newStarredSongs);
-        }, []);
-
-        const handleToggleFilter = useCallback(() => {
-            const newValue = !showingStarredOnly;
-            setShowingStarredOnly(newValue);
-            localStorage.setItem(SHOW_STARRED_PREF_KEY, newValue);
-        }, [showingStarredOnly]);
-
-        // Show station list if no valid call sign
-        if (!callSign || callSign === 'www' || callSign === 'currently') {
-            return <StationList />;
-        }
-
-        // Show error if there's an error
-        if (error) {
-            return <ErrorDisplay message={error} />;
-        }
-
-        const currentSongKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
-        const isCurrentSongStarred = currentSong ? isSongStarred(currentSongKey, starredSongs) : false;
-
-        return (
-            <div className="container d-flex justify-content-center flex-column align-items-center">
-                <div className={`offline-indicator ${isOffline ? 'visible' : ''}`}>
-                    You're offline. Showing last known songs.
                 </div>
-                
-                <NowPlaying 
-                    callSign={callSign}
-                    currentSong={currentSong}
-                    lastUpdated={lastUpdated}
-                    isStarred={isCurrentSongStarred}
-                    onToggleStar={handleToggleStar}
-                />
+            );
+        };
 
-                <History
-                    callSign={callSign}
-                    history={history}
-                    starredSongs={starredSongs}
-                    onToggleStar={handleToggleStar}
-                    showingStarredOnly={showingStarredOnly}
-                    onToggleFilter={handleToggleFilter}
-                />
-            </div>
-        );
-    };
+        // Main App Component
+        const App = () => {
+            const [callSign, setCallSign] = useState('');
+            const [currentSong, setCurrentSong] = useState(null);
+            const [history, setHistory] = useState([]);
+            const [starredSongs, setStarredSongs] = useState([]);
+            const [lastUpdated, setLastUpdated] = useState(null);
+            const [error, setError] = useState(null);
+            const [isOffline, setIsOffline] = useState(!navigator.onLine);
+            const [showingStarredOnly, setShowingStarredOnly] = useState(false);
 
-    // Render the app
-    ReactDOM.render(<App />, document.getElementById('root'));
-</script>
+            // Get call sign from subdomain
+            useEffect(() => {
+                const hostname = window.location.hostname;
+                const cs = hostname.split('.')[0];
+                setCallSign(cs);
+
+                if (cs && cs !== 'www' && cs !== 'currently') {
+                    document.title = `Now Playing on ${cs.toUpperCase()}`;
+                    // Load initial data from localStorage using EXACT same keys
+                    setHistory(loadHistory(cs));
+                    setStarredSongs(getStarredSongs());
+                    const showStarred = localStorage.getItem(SHOW_STARRED_PREF_KEY) === 'true';
+                    setShowingStarredOnly(showStarred);
+                } else {
+                    document.title = "Choose a Radio Station";
+                }
+            }, []);
+
+            // Fetch now playing data
+            const fetchNowPlaying = useCallback(async () => {
+                if (!callSign || callSign === 'www' || callSign === 'currently') return;
+
+                try {
+                    const response = await fetch(`/api.php?call_sign=${callSign.toLowerCase()}`);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                    }
+
+                    // Cache the successful response using EXACT same key
+                    const cacheKey = getCacheKey(callSign);
+                    const cacheData = { data, timestamp: new Date().toISOString() };
+                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+                    // Only update if the song has changed
+                    if (!currentSong || currentSong.song !== data.song || currentSong.artist !== data.artist) {
+                        setCurrentSong(data);
+                        // Save to history using EXACT same logic
+                        const newHistory = saveToHistory(callSign, data);
+                        if (newHistory) setHistory(newHistory);
+                    }
+
+                    setLastUpdated(new Date());
+                    setError(null);
+                } catch (err) {
+                    console.error('Error fetching now playing:', err);
+                    if (isOffline) {
+                        loadFromCache();
+                    } else {
+                        setError(err.message);
+                    }
+                }
+            }, [callSign, currentSong, isOffline]);
+
+            const loadFromCache = useCallback(() => {
+                try {
+                    const cacheKey = getCacheKey(callSign);
+                    const cached = localStorage.getItem(cacheKey);
+
+                    if (cached) {
+                        const { data, timestamp } = JSON.parse(cached);
+                        setCurrentSong(data);
+                        setLastUpdated(new Date(timestamp));
+                    }
+                } catch (error) {
+                    console.error('Error loading from cache:', error);
+                    setError('Could not load cached data');
+                }
+            }, [callSign]);
+
+            // Handle online/offline status
+            useEffect(() => {
+                const handleOnlineStatus = () => {
+                    setIsOffline(!navigator.onLine);
+                    if (!navigator.onLine) {
+                        loadFromCache();
+                    } else {
+                        fetchNowPlaying();
+                    }
+                };
+
+                window.addEventListener('online', handleOnlineStatus);
+                window.addEventListener('offline', handleOnlineStatus);
+
+                return () => {
+                    window.removeEventListener('online', handleOnlineStatus);
+                    window.removeEventListener('offline', handleOnlineStatus);
+                };
+            }, [fetchNowPlaying, loadFromCache]);
+
+            // Polling
+            useEffect(() => {
+                if (callSign && callSign !== 'www' && callSign !== 'currently') {
+                    fetchNowPlaying();
+                    const interval = setInterval(fetchNowPlaying, POLL_INTERVAL);
+                    return () => clearInterval(interval);
+                }
+            }, [fetchNowPlaying, callSign]);
+
+            const handleToggleStar = useCallback((songKey) => {
+                const newStarredSongs = toggleStarSong(songKey);
+                setStarredSongs(newStarredSongs);
+            }, []);
+
+            const handleToggleFilter = useCallback(() => {
+                const newValue = !showingStarredOnly;
+                setShowingStarredOnly(newValue);
+                localStorage.setItem(SHOW_STARRED_PREF_KEY, newValue);
+            }, [showingStarredOnly]);
+
+            // Show station list if no valid call sign
+            if (!callSign || callSign === 'www' || callSign === 'currently') {
+                return <StationList />;
+            }
+
+            // Show error if there's an error
+            if (error) {
+                return <ErrorDisplay message={error} />;
+            }
+
+            const currentSongKey = currentSong ? `${currentSong.song}:::${currentSong.artist}` : '';
+            const isCurrentSongStarred = currentSong ? isSongStarred(currentSongKey, starredSongs) : false;
+
+            return (
+                <div className="container d-flex justify-content-center flex-column align-items-center">
+                    <div className={`offline-indicator ${isOffline ? 'visible' : ''}`}>
+                        You're offline. Showing last known songs.
+                    </div>
+
+                    <NowPlaying
+                        callSign={callSign}
+                        currentSong={currentSong}
+                        lastUpdated={lastUpdated}
+                        isStarred={isCurrentSongStarred}
+                        onToggleStar={handleToggleStar}
+                    />
+
+                    <History
+                        callSign={callSign}
+                        history={history}
+                        starredSongs={starredSongs}
+                        onToggleStar={handleToggleStar}
+                        showingStarredOnly={showingStarredOnly}
+                        onToggleFilter={handleToggleFilter}
+                    />
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 
 </body>
+
 </html>
