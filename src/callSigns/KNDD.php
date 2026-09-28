@@ -35,7 +35,28 @@ class KNDD implements model\RadioStation {
         // Get the first (most recent) performance from the list
         return $this->response->performances[0]->artist;
     }
-    
+
+    public function getRecentSongs()
+    {
+        $recent = [];
+        foreach (array_slice($this->response->performances ?? [], 1) as $performance) {
+            if (empty($performance->title) || empty($performance->artist)) {
+                continue;
+            }
+            $timestamp = null;
+            if (!empty($performance->time)) {
+                // e.g. "2026-08-09T06:57:40+0000" -> ISO 8601
+                $timestamp = preg_replace('/([+-]\d{2})(\d{2})$/', '$1:$2', $performance->time);
+            }
+            $recent[] = [
+                'song' => $performance->title,
+                'artist' => $performance->artist,
+                'timestamp' => $timestamp,
+            ];
+        }
+        return $recent;
+    }
+
     public function getStationName()
     {
         return "107.7 The End";
@@ -48,12 +69,17 @@ class KNDD implements model\RadioStation {
     
     public function getStationWebsite()
     {
-        return "https://1077theend.iheart.com";
+        return "https://www.audacy.com/1077theend";
+    }
+
+    public function getStationListenUrl()
+    {
+        return "https://www.audacy.com/stations/1077theend";
     }
     
     public function getStationLogo()
     {
-        return "/logos/kndd.png";
+        return "/logos/kndd.jpg";
     }
     
     public function getStationGenre()

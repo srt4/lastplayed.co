@@ -26,7 +26,12 @@ class KZOK implements model\RadioStation {
         // Extract the JSON from the script tag
         if (preg_match('/<script id="initial-props" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {
             $jsonData = json_decode($matches[1]);
-            $this->response = $jsonData->initialProps->stationData;
+            $stationData = $jsonData->initialProps->stationData;
+            // stationData is sometimes a JSON-encoded string rather than an object
+            if (is_string($stationData)) {
+                $stationData = json_decode($stationData);
+            }
+            $this->response = $stationData;
         } else {
             throw new \Exception("Could not find station data in response");
         }
@@ -35,13 +40,54 @@ class KZOK implements model\RadioStation {
     public function getCurrentSong()
     {
         // The iHeart API returns the song title in stationData
-        return $this->response->title;
+        return $this->response->title ?? null;
     }
 
     public function getCurrentArtist()
     {
         // The iHeart API returns the artist in stationData
-        return $this->response->artist;
+        return $this->response->artist ?? null;
+    }
+
+    public function getRecentSongs()
+    {
+        // The iHeart embed page only exposes the currently playing song
+        return [];
+    }
+
+    public function getStationName()
+    {
+        return "102.5 KZOK";
+    }
+
+    public function getStationDescription()
+    {
+        return "Seattle's Classic Rock Station";
+    }
+
+    public function getStationWebsite()
+    {
+        return "https://kzok.iheart.com";
+    }
+
+    public function getStationListenUrl()
+    {
+        return "https://www.iheart.com/live/1025-kzok-7787/";
+    }
+
+    public function getStationLogo()
+    {
+        return "/logos/kzok.png";
+    }
+
+    public function getStationGenre()
+    {
+        return "Classic Rock";
+    }
+
+    public function getStationLocation()
+    {
+        return "Seattle, WA";
     }
 
 }

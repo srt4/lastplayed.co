@@ -33,4 +33,12 @@ class KBFG extends base\SpinitronStation {
         return "KBFG"; 
     } 
 
+    public function getStationName() { return "KBFG 107.3"; }
+    public function getStationDescription() { return "Volunteer-run community radio for northwest Seattle"; }
+    public function getStationWebsite() { return "https://kbfgseattle.org"; }
+    public function getStationListenUrl() { return "https://kbfgseattle.org/how-to-listen/"; }
+    public function getStationLogo() { return "/logos/kbfg.jpg"; }
+    public function getStationGenre() { return "Local music and public affairs"; }
+    public function getStationLocation() { return "Seattle, WA"; }
+
 }

@@ -28,6 +28,31 @@ if (!$station) {
     exit;
 }
 
+// Recently played songs, fetched as a separate async request from the
+// frontend so the slower history lookups don't delay the now-playing response.
+if (isset($_GET['recent'])) {
+    try {
+        $recent = array_map(function ($entry) {
+            return [
+                'song' => $entry['song'],
+                'artist' => $entry['artist'],
+                'timestamp' => $entry['timestamp'] ?? null,
+                'spotifySearchUrl' => 'https://play.spotify.com/search/'
+                    . urlencode($entry['artist'] . ' ' . $entry['song']),
+            ];
+        }, $station->getRecentSongs());
+
+        echo json_encode([
+            'callSign' => strtoupper($callSign),
+            'recent' => $recent,
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => "Failed to fetch recent songs for station '$callSign'. Please try again later."]);
+    }
+    exit;
+}
+
 try {
     $song = $station->getCurrentSong();
     $artist = $station->getCurrentArtist();
@@ -41,6 +66,7 @@ try {
             'name' => $station->getStationName(),
             'description' => $station->getStationDescription(),
             'website' => $station->getStationWebsite(),
+            'listenUrl' => $station->getStationListenUrl(),
             'logo' => $station->getStationLogo(),
             'genre' => $station->getStationGenre(),
             'location' => $station->getStationLocation(),
@@ -49,4 +75,4 @@ try {
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => "Failed to fetch data for station '$callSign'. Please try again later."]);
-} 
+}

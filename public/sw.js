@@ -1,62 +1,27 @@
-const CACHE_VERSION = new Date().getTime();
-const CACHE_NAME = 'lastplayed-cache-' + CACHE_VERSION;
-const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/thirdParty/spotify.png',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
-];
+const CACHE = 'lastplayed-static-v11';
+const STATIC = ['/index.html', '/styles.css?v=11', '/app.js?v=11', '/icon.svg?v=11'];
 
-// Install event - cache static assets
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(STATIC)).then(() => self.skipWaiting()));
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
+  event.waitUntil(
+    caches.keys()
+      .then((names) => Promise.all(names.filter((name) => name !== CACHE).map((name) => caches.delete(name))))
+      .then(() => self.clients.claim())
+  );
 });
 
-// Fetch event - serve from cache, falling back to network
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Only cache successful responses
-                if (!response || response.status !== 200 || response.type !== 'basic') {
-                    return response;
-                }
-
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME)
-                    .then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-
-                return response;
-            })
-            .catch(() => {
-                return caches.match(event.request);
-            })
-    );
-}); 
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || url.pathname === '/api.php') return;
+  if (event.request.mode === 'navigate') {
+    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));
+    return;
+  }
+  if (url.pathname === '/styles.css' || url.pathname === '/app.js') {
+    event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
+  }
+});

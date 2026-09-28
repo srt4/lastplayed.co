@@ -1,17 +1,20 @@
-# lastplayed.co 
+= Lastplayed
 
-## What is it?
+Lastplayed shows the current song on supported radio stations and keeps a listening log in your browser.
 
-lastplayed.co is a simple tool designed for when Shazam doesn't work - whether it's too loud, or too obscure. 
+== Use
 
-## Usage 
+Open the home page and choose a station, or visit a station route such as `/kexp`. Station subdomains such as `kexp.currently.rocks` also work. Each station has links to its live player and official website on the home page and station page.
 
-lastplayed.co is designed to be as simple as possible to use: simply type lastplayed.co/{call sign}, 
-and it will show you the current song and artist playing. For example, you can visit http://lastplayed.co/kndd[lastplayed.co/kndd]
-to see the last song played on 107.7 The End. 
+The page refreshes the current track every 20 seconds while it is visible. Recent tracks from the station are fetched separately, so a slow history source does not delay the current song. You can search the log, save favorites, and export a station's history as CSV.
 
-## Contributing
+The log, favorites, and last known track use the browser's `localStorage`. Existing `history_<call sign>`, `starred_songs`, `nowplaying_<call sign>`, and `show_starred_preference` data is read by the new interface. History is specific to each browser and site origin; it does not follow you to another device or domain. Up to 1,000 regular entries per station are retained, along with saved favorites. Export a CSV if you want a permanent copy.
 
-Contributing is designed to be simple. To add your station, simply create a file named `{call sign}.php` inside the `callSign`
-folder. Then, implement the `model\RadioStation` interface. Once your pull request is merged, your station will be immediately
-available. 
+== Structure
+
+* `public/index.html`, `public/styles.css`, and `public/app.js` are the build-free frontend.
+* `public/api.php` serves the current track and, with `recent=1`, recent station tracks.
+* `src/callSigns/` contains the station adapters.
+* `public/sw.js` caches the page shell for offline viewing. API responses are never served from its cache.
+
+To add a station, implement `LastPlayed\model\RadioStation` in `src/callSigns/`, register it in `src/StationFactory.php`, and add it to the station list in `public/app.js`.
