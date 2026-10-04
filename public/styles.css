@@ -20,9 +20,11 @@ a { color: inherit; text-decoration: none; }
 }
 .brand { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -7px; }
 .brand img { display: block; width: 30px; height: 30px; }
-.station-picker { display: flex; align-items: center; gap: 10px; }
-.station-picker label { font-size: 14px; color: #5e686b; }
-.station-picker select { max-width: 190px; height: 42px; padding: 0 28px 0 10px; border: 1px solid #bfc4c3; border-radius: 3px; color: #202527; background: transparent; }
+.station-picker { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 0 18px; }
+.selected-station { font-size: 14px; color: #566165; }
+.station-picker a { display: inline-flex; align-items: center; min-height: 44px; color: #215e76; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.station-picker a:hover { color: #17485b; }
+
 .page { width: min(100% - 48px, 692px); margin: 0 auto; min-height: calc(100vh - 145px); }
 h1, h2, h3, p { margin-top: 0; }
 .welcome-view { padding: 44px 0 40px; }
@@ -110,8 +112,8 @@ h1, h2, h3, p { margin-top: 0; }
 .site-footer { width: min(100% - 48px, 692px); margin: 0 auto; padding: 20px 0 28px; border-top: 1px solid #dedfda; color: #667175; font-size: 13px; }
 @media (max-width: 540px) {
   .header-inner { min-height: 68px; padding: 0 20px; }
-  .station-picker label { display: none; }
-  .station-picker select { max-width: 155px; }
+  .station-picker { gap: 0 12px; }
+  .selected-station { font-size: 13px; }
   .page, .site-footer { width: min(100% - 40px, 692px); }
   .welcome-view { padding-top: 32px; }
   .station-item { grid-template-columns: 1fr; gap: 0; padding: 4px 0; }

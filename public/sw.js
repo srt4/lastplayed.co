@@ -1,5 +1,5 @@
-const CACHE = 'lastplayed-static-v20';
-const STATIC = ['/index.html', '/styles.css?v=20', '/app.js?v=20', '/icon.svg?v=15', '/spotify.svg'];
+const CACHE = 'lastplayed-static-v21';
+const STATIC = ['/index.html', '/styles.css?v=21', '/app.js?v=21', '/icon.svg?v=15', '/spotify.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(STATIC.map((url) => new Request(url, { cache: 'reload' })))).then(() => self.skipWaiting()));

@@ -186,12 +186,7 @@
 
   function renderStations() {
     const grid = $('#station-grid');
-    const select = $('#station-select');
     stations.forEach((station) => {
-      const option = make('option', '', station.name);
-      option.value = station.code;
-      select.append(option);
-
       const row = make('div', 'station-item');
       const link = make('a', 'station-item-main');
       link.href = stationUrl(station.code);
@@ -206,8 +201,6 @@
       row.append(link, links);
       grid.append(row);
     });
-    if (state.code) select.value = state.code;
-    select.addEventListener('change', () => { location.href = stationUrl(select.value); });
   }
 
   function setConnection(label, kind) {
@@ -515,6 +508,7 @@
     state.code = resolveStation();
     if (location.hostname.toLowerCase().endsWith('.currently.rocks')) {
       $('.brand').href = 'https://currently.rocks/';
+      $('#change-station').href = 'https://currently.rocks/';
     }
     renderStations();
     if (!state.code) {
@@ -525,6 +519,7 @@
     $('#station-view').hidden = false;
     $('#station-picker').hidden = false;
     const station = stationFor(state.code);
+    $('#selected-station').textContent = station.frequency + ' FM · ' + station.shortName;
     $('#station-heading').textContent = station.name;
     $('#station-subheading').textContent = station.city;
     setStationLinks(station);
