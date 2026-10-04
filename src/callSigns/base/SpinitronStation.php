@@ -58,6 +58,7 @@ abstract class SpinitronStation implements model\RadioStation {
                 'song' => $spin->s,
                 'artist' => $spin->a,
                 'timestamp' => $timestamp,
+                'timestampSource' => 'estimated',
             ];
         }
     }

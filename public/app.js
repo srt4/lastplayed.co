@@ -11,7 +11,7 @@
     { code: 'kzok', shortName: 'KZOK', frequency: '102.5', name: '102.5 KZOK', city: 'Seattle, WA', website: 'https://kzok.iheart.com', listenUrl: 'https://www.iheart.com/live/1025-kzok-7787/' },
     { code: 'kutx', shortName: 'KUTX', frequency: '98.9', name: 'KUTX 98.9', city: 'Austin, TX', website: 'https://kutx.org', listenUrl: 'https://kutx.org/streams/' },
     { code: 'ckkq', shortName: 'The Q!', frequency: '100.3', name: '100.3 The Q!', city: 'Victoria, BC', website: 'https://www.theq.fm', listenUrl: 'https://www.theq.fm/listen/' }
-  ];
+  ].sort((a, b) => Number(a.frequency) - Number(b.frequency));
   const pollInterval = 20000;
   const recentInterval = 120000;
   const maxHistory = 1000;
@@ -122,6 +122,7 @@
       song: item.song.trim(),
       artist: item.artist.trim(),
       timestamp: timestamp,
+      timestampSource: timestamp ? (['station', 'observed', 'estimated'].includes(item.timestampSource) ? item.timestampSource : 'unknown') : 'unknown',
       spotifyUrl: spotifyUrl(item)
     };
   }
@@ -140,7 +141,7 @@
   }
 
   function observeTrack(data) {
-    const item = normalizeTrack({ song: data.song, artist: data.artist, timestamp: new Date().toISOString() });
+    const item = normalizeTrack({ song: data.song, artist: data.artist, timestamp: new Date().toISOString(), timestampSource: 'observed' });
     if (!item) return;
     const sameCurrent = hasTrack(state.current) && trackKey(state.current) === trackKey(item);
     const recentlyChecked = state.updated && Date.now() - state.updated.getTime() < 1800000;
@@ -158,11 +159,16 @@
     for (const candidate of recent) {
       const item = normalizeTrack(candidate);
       if (!item) continue;
-      const found = state.history.some((old) => {
+      const found = state.history.find((old) => {
         if (trackKey(old) !== trackKey(item)) return false;
         if (!item.timestamp || !old.timestamp) return true;
         return Math.abs(Date.parse(old.timestamp) - Date.parse(item.timestamp)) < 900000;
       });
+      if (found && item.timestamp && ['station', 'estimated'].includes(item.timestampSource) && !['station', 'estimated'].includes(found.timestampSource)) {
+        found.timestamp = item.timestamp;
+        found.timestampSource = item.timestampSource;
+        changed = true;
+      }
       if (!found) {
         state.history.push(item);
         changed = true;
@@ -206,9 +212,11 @@
 
   function setConnection(label, kind) {
     const status = $('#connection-status');
-    status.className = 'connection-status' + (kind ? ' ' + kind : '');
-    status.textContent = label;
-    status.hidden = label === 'Live' || label === 'Ready';
+    const live = label === 'Live';
+    status.className = 'connection-status' + (live ? ' live' : kind ? ' ' + kind : '');
+    $('#connection-label').textContent = live ? 'Auto-updating' : label;
+    status.hidden = label === 'Ready';
+    status.title = live ? 'Song information updates automatically every 20 seconds.' : label;
   }
 
   function showNotice() {
@@ -235,31 +243,63 @@
         date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
 
+  function historyTime(item) {
+    const time = formatTime(item.timestamp);
+    if (!item.timestamp) return time;
+    if (item.timestampSource === 'observed') return 'Seen ' + time;
+    if (item.timestampSource === 'estimated') return '≈ ' + time;
+    if (item.timestampSource === 'station') return time;
+    return 'Saved ' + time;
+  }
+
   function updateRelativeTime() {
     if (!state.updated) {
       $('#last-updated').textContent = 'Waiting for station…';
       return;
     }
     const minutes = Math.max(0, Math.floor((Date.now() - state.updated.getTime()) / 60000));
-    $('#last-updated').textContent = minutes === 0 ? 'Updated just now' :
-      'Updated ' + minutes + ' min ago';
+    $('#last-updated').textContent = minutes === 0 ? 'Checked just now' :
+      'Checked ' + minutes + ' min ago';
   }
+
+  let renderedTrackKey = null;
 
   function renderCurrent() {
     const current = state.current;
     const playable = hasTrack(current);
+    const nextTrackKey = playable ? trackKey(current) : null;
+    const trackChanged = nextTrackKey && renderedTrackKey && nextTrackKey !== renderedTrackKey;
+    if (nextTrackKey) renderedTrackKey = nextTrackKey;
     const waiting = !current;
     const unavailable = waiting && (state.requestError || state.offline);
     $('#current-title').textContent = unavailable ? 'Song unavailable' :
-      waiting ? 'Checking the station…' : playable ? current.song : 'No song listed right now';
+      waiting ? 'Checking the station…' : playable ? current.song : 'No track information right now';
     $('#current-artist').textContent = unavailable ? 'Try Refresh in a moment.' :
       waiting ? '' :
-      playable ? current.artist : 'This station hasn’t listed a song.';
-    $('#now-label').textContent = playable ? 'Playing now' : 'On the air';
+      playable ? current.artist : 'The station may be between songs.';
+    if (trackChanged && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      for (const selector of ['#current-title', '#current-artist']) {
+        const element = $(selector);
+        if (typeof element.animate !== 'function') continue;
+        element.getAnimations().forEach((animation) => animation.cancel());
+        element.animate([
+          { opacity: 0.35, transform: 'translateY(4px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ], { duration: 450, easing: 'ease-out' });
+      }
+    }
+    $('#now-label').textContent = playable
+      ? (state.offline || state.requestError ? 'Last received' : 'Playing now')
+      : 'On the air';
     updateRelativeTime();
     const spotify = $('#spotify-link');
     spotify.hidden = !playable;
-    if (playable) spotify.href = spotifyUrl(current);
+    if (playable) {
+      spotify.href = spotifyUrl(current);
+      const label = 'Search Spotify for ' + current.song + ' by ' + current.artist;
+      spotify.setAttribute('aria-label', label);
+      spotify.title = label;
+    }
     const favorite = $('#favorite-button');
     favorite.hidden = !playable;
     if (playable) {
@@ -275,7 +315,7 @@
       $('#station-subheading').textContent = location && location.toLowerCase() !== 'unknown location'
         ? location : stationFor(state.code).city;
       setStationLinks(station);
-      document.title = (station.name || state.code.toUpperCase()) + ' — Lastplayed';
+      document.title = (station.name || state.code.toUpperCase()) + ' — currently.rocks';
     }
   }
 
@@ -303,27 +343,61 @@
     }
     if (hasTrack(state.current)) {
       const currentIndex = earlier.findIndex((item) => trackKey(item) === trackKey(state.current));
-      if (currentIndex !== -1) earlier.splice(currentIndex, 1);
+      // The current song belongs in Favorites, even though it is not an earlier song.
+      if (!state.savedOnly && currentIndex !== -1) earlier.splice(currentIndex, 1);
+      if (state.savedOnly && currentIndex === -1) {
+        earlier.unshift(normalizeTrack(state.current));
+      }
     }
-    $('#history-count').textContent = String(earlier.length);
     $('#export-button').hidden = state.history.length === 0;
     const query = state.searched.toLocaleLowerCase().trim();
+    const favoriteKeys = new Set();
     const filtered = earlier.filter((item) => {
-      if (state.savedOnly && !state.favorites.includes(trackKey(item))) return false;
+      if (state.savedOnly) {
+        const key = trackKey(item);
+        if (!state.favorites.includes(key) || favoriteKeys.has(key)) return false;
+        favoriteKeys.add(key);
+      }
       return !query || (item.song + ' ' + item.artist).toLocaleLowerCase().includes(query);
     });
+    $('#history-label').textContent = state.savedOnly ? 'Favorites on ' + stationFor(state.code).shortName : 'Earlier songs';
+    $('#history-count').textContent = String(filtered.length);
+    $('#search-state').hidden = !query;
+    $('#search-query').textContent = state.searched;
     const shown = filtered.slice(0, state.visibleCount);
     const list = $('#history-list');
-    list.replaceChildren();
+    const focused = list.contains(document.activeElement) ? document.activeElement : null;
+    const existingRows = new Map([...list.children].map(row => [row.dataset.key, row]));
+    const occurrences = new Map();
     list.hidden = shown.length === 0;
     const fragment = document.createDocumentFragment();
     shown.forEach((item) => {
+      const key = trackKey(item);
+      const occurrence = occurrences.get(key) || 0;
+      occurrences.set(key, occurrence + 1);
+      const rowKey = JSON.stringify([key, occurrence]);
       const row = make('div', 'history-row');
+      row.dataset.key = rowKey;
       const track = make('div', 'track-cell');
       track.append(make('div', 'track-name', item.song));
       track.append(make('p', 'track-artist', item.artist));
       row.append(track);
-      row.append(make('span', 'time-cell', formatTime(item.timestamp)));
+      const isCurrent = state.savedOnly && hasTrack(state.current) && trackKey(item) === trackKey(state.current);
+      const metadata = make('div', 'track-meta');
+      metadata.append(make('span', 'time-cell', isCurrent
+        ? (state.offline || state.requestError ? 'Last received' : 'Playing now')
+        : historyTime(item)));
+      const search = externalLink('', spotifyUrl(item));
+      const icon = make('img', 'spotify-icon');
+      icon.src = '/spotify.svg';
+      icon.alt = '';
+      icon.setAttribute('aria-hidden', 'true');
+      search.append(icon);
+      search.className = 'history-spotify';
+      search.title = 'Search Spotify for ' + item.song + ' by ' + item.artist;
+      search.setAttribute('aria-label', search.title);
+      metadata.append(search);
+      row.append(metadata);
       const actions = make('div', 'row-actions');
       const saved = state.favorites.includes(trackKey(item));
       const favorite = make('button', 'icon-button', saved ? '★' : '☆');
@@ -334,14 +408,35 @@
       favorite.addEventListener('click', () => toggleFavorite(item));
       actions.append(favorite);
       row.append(actions);
+      const existing = existingRows.get(rowKey);
+      if (existing) {
+        for (const selector of ['.time-cell', '.icon-button']) {
+          const oldNode = existing.querySelector(selector);
+          const newNode = row.querySelector(selector);
+          if (oldNode.textContent !== newNode.textContent) oldNode.textContent = newNode.textContent;
+          for (const attribute of ['title', 'aria-label', 'aria-pressed']) {
+            const value = newNode.getAttribute(attribute);
+            if (value !== null && oldNode.getAttribute(attribute) !== value) oldNode.setAttribute(attribute, value);
+          }
+        }
+        row._retained = existing;
+      }
       fragment.append(row);
     });
-    list.append(fragment);
+    const desired = [...fragment.children].map(row => row._retained || row);
+    const keep = new Set(desired);
+    for (const row of [...list.children]) if (!keep.has(row)) row.remove();
+    desired.forEach((row, index) => {
+      if (list.children[index] !== row) list.insertBefore(row, list.children[index] || null);
+    });
+    if (focused && document.activeElement !== focused) {
+      (focused.isConnected ? focused : $('#filter-button')).focus({ preventScroll: true });
+    }
     $('#history-empty').hidden = filtered.length > 0;
-    $('#history-empty h3').textContent = state.savedOnly ? 'No favorites yet' :
-      query ? 'No songs found' : 'No songs yet';
-    $('#history-empty p').textContent = state.savedOnly ? 'Star a song to add it to your favorites.' :
-      query ? 'Try another song or artist.' : 'Songs appear here as the station plays them.';
+    $('#history-empty h3').textContent = query ? 'No songs found' :
+      state.savedOnly ? 'No favorites yet' : 'No songs yet';
+    $('#history-empty p').textContent = query ? 'Try another song or artist.' :
+      state.savedOnly ? 'Star a song to add it to your favorites.' : 'Songs appear here as the station plays them.';
     $('#history-showing').textContent = shown.length < filtered.length
       ? 'Showing ' + shown.length + ' of ' + filtered.length : '';
     $('#load-more').hidden = shown.length >= filtered.length;
@@ -400,16 +495,16 @@
 
   function exportCSV() {
     const escape = (value) => '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
-    const rows = [['Station', 'Song', 'Artist', 'Heard at', 'Favorite', 'Spotify']];
+    const rows = [['Station', 'Song', 'Artist', 'Time', 'Time source', 'Favorite', 'Spotify']];
     state.history.forEach((item) => rows.push([
-      state.code.toUpperCase(), item.song, item.artist, item.timestamp || '',
+      state.code.toUpperCase(), item.song, item.artist, item.timestamp || '', item.timestampSource || 'unknown',
       state.favorites.includes(trackKey(item)) ? 'Yes' : 'No', spotifyUrl(item)
     ]));
     const csv = '\uFEFF' + rows.map((row) => row.map(escape).join(',')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = make('a');
     link.href = url;
-    link.download = 'lastplayed-' + state.code + '-history.csv';
+    link.download = state.code + '-history.csv';
     document.body.append(link);
     link.click();
     link.remove();
@@ -433,14 +528,13 @@
     $('#station-heading').textContent = station.name;
     $('#station-subheading').textContent = station.city;
     setStationLinks(station);
-    document.title = station.name + ' — Lastplayed';
+    document.title = station.name + ' — currently.rocks';
     const storedHistory = readJSON('history_' + state.code, []);
     state.history = Array.isArray(storedHistory) ? sortHistory(storedHistory.map(normalizeTrack).filter(Boolean)) : [];
     const storedFavorites = readJSON('starred_songs', []);
     state.favorites = Array.isArray(storedFavorites) ? storedFavorites.filter((value) => typeof value === 'string') : [];
     state.savedOnly = readJSON('show_starred_preference', false) === true;
-    $('#filter-button').setAttribute('aria-pressed', String(state.savedOnly));
-    $('#filter-button').textContent = state.savedOnly ? '★ Favorites' : '☆ Favorites';
+    $('#filter-button').textContent = state.savedOnly ? 'Show all songs' : '☆ Favorites';
     const cached = readJSON('nowplaying_' + state.code, null);
     if (cached && cached.data) {
       state.current = cached.data;
@@ -462,10 +556,16 @@
     $('#filter-button').addEventListener('click', () => {
       state.savedOnly = !state.savedOnly;
       state.visibleCount = pageSize;
-      $('#filter-button').setAttribute('aria-pressed', String(state.savedOnly));
-      $('#filter-button').textContent = state.savedOnly ? '★ Favorites' : '☆ Favorites';
+        $('#filter-button').textContent = state.savedOnly ? 'Show all songs' : '☆ Favorites';
       writeJSON('show_starred_preference', state.savedOnly);
       renderHistory();
+    });
+    $('#clear-search').addEventListener('click', () => {
+      state.searched = '';
+      $('#history-search').value = '';
+      renderHistory();
+      $('#history-search').closest('details').open = true;
+      $('#history-search').focus();
     });
     $('#load-more').addEventListener('click', () => { state.visibleCount += pageSize; renderHistory(); });
     $('#export-button').addEventListener('click', exportCSV);
@@ -503,7 +603,7 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(() => {});
     });
   }
   init();

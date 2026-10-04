@@ -37,6 +37,7 @@ if (isset($_GET['recent'])) {
                 'song' => $entry['song'],
                 'artist' => $entry['artist'],
                 'timestamp' => $entry['timestamp'] ?? null,
+                'timestampSource' => isset($entry['timestamp']) ? ($entry['timestampSource'] ?? 'station') : 'unknown',
                 'spotifySearchUrl' => 'https://play.spotify.com/search/'
                     . urlencode($entry['artist'] . ' ' . $entry['song']),
             ];

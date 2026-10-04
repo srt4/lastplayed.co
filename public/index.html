@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#faf9f7">
+  <meta name="theme-color" content="#f3ebe3">
   <meta name="description" content="See what is playing on the radio and remember songs you heard.">
-  <title>Lastplayed</title>
-  <link rel="icon" type="image/svg+xml" href="/icon.svg?v=11">
-  <link rel="stylesheet" href="/styles.css?v=11">
-  <script src="/app.js?v=11" defer></script>
+  <title>Radio song history — currently.rocks</title>
+  <link rel="icon" type="image/svg+xml" href="/icon.svg?v=15">
+  <link rel="stylesheet" href="/styles.css?v=20">
+  <script src="/app.js?v=20" defer></script>
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="/"><img src="/icon.svg?v=11" alt="" aria-hidden="true"><span class="brand-name">lastplayed</span></a>
+      <a class="brand" href="/" aria-label="All stations" title="All stations"><img src="/icon.svg?v=15" alt="" aria-hidden="true"></a>
       <div id="station-picker" class="station-picker" hidden>
         <label for="station-select">Station</label>
         <select id="station-select" aria-label="Choose another station"></select>
@@ -29,26 +29,24 @@
     </section>
 
     <section id="station-view" hidden>
-      <div class="station-heading">
-        <h1 id="station-heading">Station</h1>
-        <p id="station-subheading"></p>
-        <nav class="station-links" aria-label="Station links">
-          <a id="listen-link" target="_blank" rel="noopener noreferrer">Listen live</a>
-          <a id="website-link" target="_blank" rel="noopener noreferrer">Homepage</a>
-        </nav>
-      </div>
-
-      <div id="notice" class="notice" role="status" hidden></div>
-
       <section class="now-card" aria-labelledby="now-label">
         <div class="now-top">
-          <h2 id="now-label">Playing now</h2>
-          <span id="connection-status" class="connection-status">Checking…</span>
+          <p id="now-label">Playing now</p>
+          <span id="connection-status" class="connection-status" role="status">
+            <svg class="antenna" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M16 10v14m-4 0h8m-7-4h6"/>
+              <circle cx="16" cy="8" r="2"/>
+              <path class="radio-wave wave-near" d="M11 4a6 6 0 0 0 0 8m10-8a6 6 0 0 1 0 8"/>
+              <path class="radio-wave wave-far" d="M7 1a10 10 0 0 0 0 14M25 1a10 10 0 0 1 0 14"/>
+            </svg>
+            <span id="connection-label">Checking…</span>
+          </span>
         </div>
-        <p id="current-title" class="current-title">Checking the station…</p>
+        <div id="notice" class="notice" role="status" hidden></div>
+        <h1 id="current-title" class="current-title">Checking the station…</h1>
         <p id="current-artist" class="current-artist"></p>
         <div class="now-actions">
-          <a id="spotify-link" class="song-link" target="_blank" rel="noopener noreferrer" hidden>Find on Spotify</a>
+          <a id="spotify-link" class="song-link" target="_blank" rel="noopener noreferrer" aria-label="Search Spotify" title="Search Spotify" hidden><img class="spotify-icon" src="/spotify.svg" alt="" aria-hidden="true"></a>
           <button id="favorite-button" class="favorite-button" type="button" aria-pressed="false" hidden>
             <span class="favorite-icon" aria-hidden="true">☆</span><span>Favorite</span>
           </button>
@@ -59,14 +57,24 @@
         </div>
       </section>
 
+      <div class="station-heading">
+        <h2 id="station-heading">Station</h2>
+        <p id="station-subheading"></p>
+        <nav class="station-links" aria-label="Station links">
+          <a id="listen-link" target="_blank" rel="noopener noreferrer">Listen live</a>
+          <a id="website-link" target="_blank" rel="noopener noreferrer">Homepage</a>
+        </nav>
+      </div>
+
       <section class="history-section" aria-labelledby="history-heading">
         <div class="history-heading">
           <div>
-            <h2 id="history-heading">Earlier songs <span id="history-count" class="history-count">0</span></h2>
+            <h2 id="history-heading"><span id="history-label">Earlier songs</span> <span id="history-count" class="history-count">0</span></h2>
           </div>
-          <button id="filter-button" class="filter-button" type="button" aria-pressed="false">☆ Favorites</button>
+          <button id="filter-button" class="filter-button" type="button" >☆ Favorites</button>
         </div>
 
+        <p id="search-state" class="search-state" hidden>Searching: <span id="search-query"></span> <button id="clear-search" class="text-button" type="button">Clear search</button></p>
         <div id="history-list" class="history-list"></div>
         <div id="history-empty" class="history-empty" hidden>
           <h3>No songs yet</h3>
@@ -88,6 +96,6 @@
     </section>
   </main>
 
-  <footer class="site-footer">Song history stays in this browser.</footer>
+  <footer class="site-footer">History and favorites stay in this browser, separately for each station.<details class="time-help"><summary>About song times</summary><p>All times use your local timezone. Unmarked times come from station playlists. “Seen” means first noticed here; ≈ means the station supplied a time but its date was estimated; “Saved” means the original time source is unknown.</p></details></footer>
 </body>
 </html>

@@ -1,8 +1,8 @@
-const CACHE = 'lastplayed-static-v11';
-const STATIC = ['/index.html', '/styles.css?v=11', '/app.js?v=11', '/icon.svg?v=11'];
+const CACHE = 'lastplayed-static-v20';
+const STATIC = ['/index.html', '/styles.css?v=20', '/app.js?v=20', '/icon.svg?v=15', '/spotify.svg'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(STATIC)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(STATIC.map((url) => new Request(url, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -18,10 +18,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin || url.pathname === '/api.php') return;
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));
+    event.respondWith(fetch(event.request, { cache: 'no-cache' }).catch(() => caches.match('/index.html')));
     return;
   }
-  if (url.pathname === '/styles.css' || url.pathname === '/app.js') {
+  if (url.pathname === '/styles.css' || url.pathname === '/app.js' || url.pathname === '/spotify.svg') {
     event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
   }
 });
