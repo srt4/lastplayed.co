@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 class KZOK implements model\RadioStation {
 
@@ -21,7 +22,7 @@ class KZOK implements model\RadioStation {
         $context = stream_context_create($options);
 
         // Get the HTML response
-        $html = file_get_contents(self::$API_BASE, false, $context);
+        $html = SqliteCache::fetch(self::$API_BASE, 20, $context);
 
         // Extract the JSON from the script tag
         if (preg_match('/<script id="initial-props" type="application\/json">(.*?)<\/script>/s', $html, $matches)) {

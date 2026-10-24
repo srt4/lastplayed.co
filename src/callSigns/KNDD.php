@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 class KNDD implements model\RadioStation {
 
@@ -21,7 +22,7 @@ class KNDD implements model\RadioStation {
         $context = stream_context_create($options);
 
         // Make the request using the modified context
-        $this->response = json_decode(file_get_contents(self::$API_BASE, false, $context));
+        $this->response = json_decode(SqliteCache::fetch(self::$API_BASE, 15, $context));
     }
 
     public function getCurrentSong()

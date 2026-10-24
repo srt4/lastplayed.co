@@ -16,6 +16,11 @@ class StationFactory
         'kxsu' => callSigns\KXSU::class,
     ];
 
+    public static function callSigns(): array
+    {
+        return array_keys(self::$stations);
+    }
+
     public static function create(string $callSign): ?model\RadioStation
     {
         $callSign = strtolower(trim($callSign));

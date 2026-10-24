@@ -28,9 +28,26 @@ if (!$station) {
     exit;
 }
 
+// Record plays on every request so the server-side history stays current.
+// History must never break the API, so failures here are only logged.
+try {
+    LastPlayed\PlayLog::record($callSign, $station);
+} catch (Exception $e) {
+    error_log("Failed to record plays for station '$callSign': " . $e->getMessage());
+}
+
 // Recently played songs, fetched as a separate async request from the
 // frontend so the slower history lookups don't delay the now-playing response.
 if (isset($_GET['recent'])) {
+    try {
+        // Serve from the server-side play log, which goes back much further
+        // than the handful of tracks the upstreams expose.
+        $entries = LastPlayed\PlayLog::recent($callSign, 50);
+    } catch (Exception $e) {
+        error_log("Failed to read play history for station '$callSign': " . $e->getMessage());
+        $entries = $station->getRecentSongs();
+    }
+
     try {
         $recent = array_map(function ($entry) {
             return [
@@ -41,7 +58,7 @@ if (isset($_GET['recent'])) {
                 'spotifySearchUrl' => 'https://play.spotify.com/search/'
                     . urlencode($entry['artist'] . ' ' . $entry['song']),
             ];
-        }, $station->getRecentSongs());
+        }, $entries);
 
         echo json_encode([
             'callSign' => strtoupper($callSign),

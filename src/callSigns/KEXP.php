@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 class KEXP implements model\RadioStation {
 
@@ -12,7 +13,7 @@ class KEXP implements model\RadioStation {
 
     public function __construct() 
     {
-        $this->response = json_decode(file_get_contents(self::$API_BASE));
+        $this->response = json_decode(SqliteCache::fetch(self::$API_BASE, 15));
     }
 
     public function getCurrentSong()

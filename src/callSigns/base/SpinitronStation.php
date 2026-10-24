@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns\base;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 abstract class SpinitronStation implements model\RadioStation {
 
@@ -14,8 +15,8 @@ abstract class SpinitronStation implements model\RadioStation {
 
     public function __construct()
     {
-        $responseBody = file_get_contents("https://widgets.spinitron.com/"
-            . strtoupper($this->getCallSign()) . "/");
+        $responseBody = SqliteCache::fetch("https://widgets.spinitron.com/"
+            . strtoupper($this->getCallSign()) . "/", 30);
         $songArtist = array(); // artist is index 1, song is index 2
         preg_match("/class=\"artist\">(.+?)<.+?class=\"song\">(.+?)</", $responseBody, $songArtist);
         $this->artist = $songArtist[1] ?? null;

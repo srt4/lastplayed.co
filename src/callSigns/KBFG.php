@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 class KBFG extends base\SpinitronStation {
 
@@ -11,7 +12,7 @@ class KBFG extends base\SpinitronStation {
 
     public function __construct() 
     {
-        $responseBody = file_get_contents("http://ibz1.com/htdocs/recentlyplayed2.cgi");
+        $responseBody = SqliteCache::fetch("http://ibz1.com/htdocs/recentlyplayed2.cgi", 60);
         $songArtist = array(); // artist is index 2, song is index 1 
         preg_match("/<b>(.+?)<\/b><br>By: (.+?)<br>/", $responseBody, $songArtist);
         $this->artist = $songArtist[2]; 

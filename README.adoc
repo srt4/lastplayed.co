@@ -8,13 +8,16 @@ Open the home page and choose a station, or visit a station route such as `/kexp
 
 The page refreshes the current track every 20 seconds while it is visible. Recent tracks from the station are fetched separately, so a slow history source does not delay the current song. You can search the log, save favorites, and export a station's history as CSV.
 
-The log, favorites, and last known track use the browser's `localStorage`. Existing `history_<call sign>`, `starred_songs`, `nowplaying_<call sign>`, and `show_starred_preference` data is read by the new interface. History is specific to each browser and site origin; it does not follow you to another device or domain. Up to 1,000 regular entries per station are retained, along with saved favorites. Export a CSV if you want a permanent copy.
+The log, favorites, and last known track use the browser's `localStorage`. Existing `history_<call sign>`, `starred_songs`, `nowplaying_<call sign>`, and `show_starred_preference` data is read by the new interface. The server also keeps its own play history per station (see below), which backfills the browser log on every visit, so history gathered while you were away appears on any device. Up to 1,000 regular entries per station are retained in the browser, along with saved favorites. Export a CSV if you want a permanent copy.
 
 == Structure
 
 * `public/index.html`, `public/styles.css`, and `public/app.js` are the build-free frontend.
 * `public/api.php` serves the current track and, with `recent=1`, recent station tracks.
 * `src/callSigns/` contains the station adapters.
+* `src/SqliteCache.php` caches upstream responses in SQLite (`data/lastplayed.db`, created on first run) so each station's source is fetched at most once per few seconds no matter how many visitors are polling, and stale data is served when a source is down.
+* `src/PlayLog.php` records every play into the same database, giving each station a durable server-side history that backs the `recent=1` endpoint.
+* `cron/poll.php` refreshes the cache and records history for all stations; run it every minute for gapless history, e.g. `* * * * * docker exec apache php /var/www/lastplayed.co/cron/poll.php`.
 * `public/sw.js` caches the page shell for offline viewing. API responses are never served from its cache.
 
 To add a station, implement `LastPlayed\model\RadioStation` in `src/callSigns/`, register it in `src/StationFactory.php`, and add it to the station list in `public/app.js`.

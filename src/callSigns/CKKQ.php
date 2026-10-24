@@ -3,6 +3,7 @@
 namespace LastPlayed\callSigns;
 
 use LastPlayed\model;
+use LastPlayed\SqliteCache;
 
 class CKKQ implements model\RadioStation {
 
@@ -14,7 +15,7 @@ class CKKQ implements model\RadioStation {
     public function __construct() 
     {
         $context = stream_context_create(['http' => ['timeout' => 6]]);
-        $body = @file_get_contents(self::$API_BASE, false, $context);
+        $body = SqliteCache::fetch(self::$API_BASE, 15, $context);
         if ($body !== false && preg_match('/^jsonpcallback\((.*)\);?\s*$/s', trim($body), $matches)) {
             $this->response = json_decode($matches[1]);
         }
